@@ -2580,3 +2580,35 @@ h3.ce-header { font-size: 1.2rem; color: var(--color-primary); text-transform: u
 .cdx-input.image-tool__caption:focus { background-color: var(--color-bg-darkest) !important; border-color: var(--color-primary) !important; outline: none !important; }
 
 @media (max-width: 768px) { .image-tool { width: 100% !important; } }
+
+/* =================================================================
+   CANVAS UI FIXES (Overrides for Editor.js Native Styles)
+   ================================================================= */
+
+/* 1. Force the Image Resize Handle to always show the diagonal arrows */
+.neet-image-resize-handle, 
+.neet-image-resize-handle:hover {
+    cursor: nwse-resize !important;
+}
+
+/* 2. Restore the standard Text Cursor for all typing blocks */
+.ce-block__content, 
+.ce-paragraph, 
+.ce-header, 
+.cdx-list,
+.infinite-canvas [contenteditable="true"] {
+    cursor: text !important;
+}
+
+/* 3. Protect Checklist Checkboxes from the text cursor (Keep them as pointers) */
+.cdx-checklist__item-checkbox, 
+.cdx-checklist__item-checkbox:hover {
+    cursor: pointer !important;
+}
+
+/* 4. Force resize cursor globally while actively dragging */
+body.is-resizing, 
+body.is-resizing * {
+    cursor: nwse-resize !important;
+    user-select: none !important;
+}

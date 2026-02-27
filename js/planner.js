@@ -1,33 +1,20 @@
-
-/* =================================================================
-   SECTION 4: PLANNER LOGIC (v3.0 - Complete & Verified)
-   ================================================================= */
+/* ================
+   PLANNER LOGIC 
+   ================ */
 
 // 1. DATA LOADING & VARIABLES
-let currentSyllabus = [];
-const savedCustomPlan = localStorage.getItem('neetActivePlanData');
-
-if (savedCustomPlan) {
-    try {
-        currentSyllabus = JSON.parse(savedCustomPlan);
-    } catch(e) {
-        currentSyllabus = (typeof ACTIVE_PLAN !== 'undefined') ? ACTIVE_PLAN : [];
-    }
-} else {
-    currentSyllabus = (typeof ACTIVE_PLAN !== 'undefined') ? ACTIVE_PLAN : [];
-}
-
-let completed = JSON.parse(localStorage.getItem('neetCalendarCompleted')) || [];
-let plannerEdits = JSON.parse(localStorage.getItem('neetPlannerEdits')) || {};
+let currentSyllabus = OS.Storage.get('neetActivePlanData', (typeof ACTIVE_PLAN !== 'undefined') ? ACTIVE_PLAN : []);
+let completed = OS.Storage.get('neetCalendarCompleted', []);
+let plannerEdits = OS.Storage.get('neetPlannerEdits', {});
 let viewDate = new Date();
 let scheduleMap = {};
 
-// 2. INITIALIZATION (The "Keep Existing" parts are here now)
+// 2. INITIALIZATION
 function initPlannerStart() {
-    let savedStart = localStorage.getItem('neetPlanStartDate');
+    let savedStart = OS.Storage.get('neetPlanStartDate', null);
     if (!savedStart) {
         savedStart = getLocalDayKey(new Date());
-        localStorage.setItem('neetPlanStartDate', savedStart);
+        OS.Storage.set('neetPlanStartDate', savedStart);
     }
     if(typeof setDateInputValue === 'function') {
         setDateInputValue('startDatePicker', 'startDatePickerText', savedStart);
@@ -37,8 +24,10 @@ function initPlannerStart() {
 function updateStartDate() {
     const picker = document.getElementById('startDatePicker');
     if(picker && picker.value) {
-        localStorage.setItem('neetPlanStartDate', picker.value);
-        calculateScheduleMap(); renderCalendar(); updatePlannerStats();
+        OS.Storage.set('neetPlanStartDate', picker.value);
+        calculateScheduleMap(); 
+        renderCalendar(); 
+        updatePlannerStats();
     }
 }
 
@@ -54,10 +43,10 @@ function changeMonth(delta) {
     renderCalendar();
 }
 
-// 3. SCHEDULER ENGINE (Smart Push Logic)
+// 3. SCHEDULER ENGINE 
 function calculateScheduleMap() {
     scheduleMap = {};
-    const startStr = localStorage.getItem('neetPlanStartDate');
+    const startStr = OS.Storage.get('neetPlanStartDate', null);
     if(!startStr) return;
 
     const parts = startStr.split('-');
@@ -98,7 +87,7 @@ function calculateScheduleMap() {
     }
 }
 
-// 4. RENDERER (Calendar UI - Now with Infinite Sundays)
+// 4. RENDERER 
 function renderCalendar() {
     const grid = document.getElementById('calendarGrid');
     if(!grid) return;
@@ -134,7 +123,7 @@ function renderCalendar() {
     for (let d = 1; d <= daysInMonth; d++) {
         const dateObj = new Date(year, month, d);
         const dateKey = getLocalDayKey(dateObj);
-        const data = scheduleMap[dateKey]; // Data from Scheduler
+        const data = scheduleMap[dateKey]; 
         
         const cell = document.createElement('div');
         cell.className = 'day-cell';
@@ -149,17 +138,15 @@ function renderCalendar() {
 
         // --- CORE LOGIC START ---
         const cellId = data ? data.dayId : dateKey;
-        const savedEdit = plannerEdits[cellId] || plannerEdits[dateKey]; // Check both IDs
+        const savedEdit = plannerEdits[cellId] || plannerEdits[dateKey]; 
         
         let displayTopic = null;
-        let displaySub = 'O'; // Default to Off/Rest
+        let displaySub = 'O'; 
 
-        // Priority 1: User Manual Edit
         if (savedEdit) {
             displayTopic = (typeof savedEdit === 'string') ? savedEdit : savedEdit.t;
             displaySub = (typeof savedEdit === 'string') ? ((data && data.task)?data.task.s:'O') : savedEdit.s;
         } 
-        // Priority 2: Scheduler Data (Tasks)
         else if (data) {
             if (data.type === 'task') {
                 displayTopic = data.task.t; displaySub = data.task.s;
@@ -167,9 +154,7 @@ function renderCalendar() {
                 displayTopic = "Rest"; displaySub = 'O'; 
             }
         }
-        // Priority 3: INFINITE SUNDAY FALLBACK (The Smart Logic)
         else if (dateObj.getDay() === 0) {
-            // If no data exists, but it IS a Sunday, treat it as Rest.
             displayTopic = "Rest"; 
             displaySub = 'O';
         }
@@ -184,7 +169,6 @@ function renderCalendar() {
             else if (displaySub === 'M') { subClass = 'tag-math'; subName = 'MATH'; }
             else { subClass = 'tag-rest'; subName = 'DAY OFF'; }
 
-            // Check completion status (support both ID formats)
             const isDone = completed.includes(cellId) || completed.includes(dateKey);
             const isPast = dateObj < realToday;
             
@@ -193,11 +177,10 @@ function renderCalendar() {
 
             cell.insertAdjacentHTML('beforeend', `<div class="task-content"><span class="subject-tag ${subClass}">${subName}</span><span class="task-topic">${displayTopic}</span></div>`);
             
-            // Use dateKey as fallback ID for infinite Sundays so they can be checked off too
             const clickId = data ? data.dayId : dateKey;
             cell.onclick = () => toggleTask(clickId);
         } else {
-            cell.insertAdjacentHTML('beforeend', `<div class="task-content"><span class="task-topic" style="color:#333;">-</span></div>`);
+            cell.insertAdjacentHTML('beforeend', `<div class="task-content"><span class="task-topic" style="color:var(--color-border);">-</span></div>`);
         }
 
         // EDIT BUTTON
@@ -211,6 +194,7 @@ function renderCalendar() {
         grid.appendChild(cell);
     }
 }
+
 // 5. EDITING LOGIC
 function openEditModal(dayId, currentSub, currentTopic) {
     document.getElementById('editDayId').value = dayId;
@@ -235,7 +219,6 @@ function setEditSubject(sub, btn) {
     else {
         const match = document.querySelector(`#editModalOverlay .pill-btn[data-type="${sub}"]`);
         if(match) match.classList.add('active');
-        // Fallback for old letter matching
         else if(sub==='P') document.querySelectorAll('#editModalOverlay .pill-btn')[0].classList.add('active');
     }
 }
@@ -246,16 +229,15 @@ function saveEditTask() {
     const topicInput = document.getElementById('editTopicInput'); 
     const topic = topicInput.value;
     
-    // VALIDATION: Red border if empty
     if(!topic.trim()) { 
-        topicInput.style.borderColor = '#ff3b3b'; 
+        topicInput.style.borderColor = 'var(--color-primary)'; 
         topicInput.placeholder = "Topic is required!"; 
         topicInput.focus(); 
         return; 
     }
     
     plannerEdits[dayId] = { s: sub, t: topic };
-    localStorage.setItem('neetPlannerEdits', JSON.stringify(plannerEdits));
+    OS.Storage.set('neetPlannerEdits', plannerEdits);
     
     calculateScheduleMap(); 
     renderCalendar(); 
@@ -266,86 +248,75 @@ function saveEditTask() {
 function clearEditTask() {
     const dayId = document.getElementById('editDayId').value;
     delete plannerEdits[dayId];
-    localStorage.setItem('neetPlannerEdits', JSON.stringify(plannerEdits));
-    calculateScheduleMap(); renderCalendar(); updatePlannerStats();
+    OS.Storage.set('neetPlannerEdits', plannerEdits);
+    calculateScheduleMap(); 
+    renderCalendar(); 
+    updatePlannerStats();
     closeEditModal(null);
 }
 
-// 6. MENU & EXPORT (Updated with Animation)
+// 6. MENU & EXPORT 
 function openPlannerMenu() { 
     const overlay = document.getElementById('plannerMenuOverlay');
     overlay.style.display = 'flex'; 
-    // Small delay to trigger CSS transition
     setTimeout(() => overlay.classList.add('active'), 10);
 }
 
 function closePlannerMenu(e) { 
-    // Close if clicked on Overlay OR Close Button
     if (e === null || e.target.id === 'plannerMenuOverlay' || e.target.classList.contains('btn-close-accent')) {
         const overlay = document.getElementById('plannerMenuOverlay');
         overlay.classList.remove('active');
         setTimeout(() => overlay.style.display = 'none', 300); 
     }
 }
-        // NEW: Core logic to process planner file silently
-        function processPlannerFile(file) {
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const json = JSON.parse(e.target.result);
-                    const planData = Array.isArray(json) ? json : json.syllabus;
-                    
-                    if(json.edits) {
-                        plannerEdits = json.edits;
-                        localStorage.setItem('neetPlannerEdits', JSON.stringify(plannerEdits));
-                    }
-                    if(json.startDate) {
-                        localStorage.setItem('neetPlanStartDate', json.startDate);
-                    }
-                    
-                    localStorage.setItem('neetActivePlanData', JSON.stringify(planData));
-                    currentSyllabus = planData;
-                    
-                    calculateScheduleMap(); 
-                    renderCalendar(); 
-                    updatePlannerStats();
-                    
-                    closePlannerMenu(null); // Close menu instantly if open
-                } catch(err) { 
-                    alert("Error reading plan JSON."); 
-                }
-            };
-            reader.readAsText(file);
-        }
 
-        // Updated input handler for manual clicks
-        function handlePlanUpload(input) {
-            processPlannerFile(input.files[0]);
-            input.value = ''; // Reset input
+function processPlannerFile(file) {
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const json = JSON.parse(e.target.result);
+            const planData = Array.isArray(json) ? json : json.syllabus;
+            
+            if(json.edits) {
+                plannerEdits = json.edits;
+                OS.Storage.set('neetPlannerEdits', plannerEdits);
+            }
+            if(json.startDate) {
+                OS.Storage.set('neetPlanStartDate', json.startDate);
+            }
+            
+            OS.Storage.set('neetActivePlanData', planData);
+            currentSyllabus = planData;
+            
+            calculateScheduleMap(); 
+            renderCalendar(); 
+            updatePlannerStats();
+            
+            closePlannerMenu(null); 
+        } catch(err) { 
+            alert("Error reading plan JSON."); 
         }
+    };
+    reader.readAsText(file);
+}
+
+function handlePlanUpload(input) {
+    processPlannerFile(input.files[0]);
+    input.value = ''; 
+}
 
 /* =========================================
-   DEBUG CONTEXT MENU LOGIC
-   ========================================= */
-
-
-/* =========================================
-   SETTINGS / THEME HANDLERS
+   SETTINGS / THEME MODAL
    ========================================= */
 function openSettingsModal() {
     let overlay = document.getElementById('settingsModalOverlay');
     if (!overlay) return;
-    // Ensure the overlay is a direct child of body so it's not clipped by other containers
     if (overlay.parentElement !== document.body) document.body.appendChild(overlay);
-    // Ensure it's above everything else
     overlay.style.zIndex = '99999';
     overlay.style.display = 'flex';
-    // Slight delay to allow layout then fade in via .active
     setTimeout(() => overlay.classList.add('active'), 10);
-    // Try to focus overlay for accessibility
     try { overlay.tabIndex = -1; overlay.focus(); } catch (e) {}
-    // Mark the active button
     updateSettingsModalButtons();
 }
 
@@ -359,13 +330,10 @@ function closeSettingsModal(e) {
 
 function setTheme(mode, skipSave = false) {
     if (!mode) return;
-    // Accept only 'dark' and 'darkest' - default to dark for unknown
     const valid = ['dark','darkest'];
     if (!valid.includes(mode)) mode = 'dark';
 
-    // Apply data-theme attribute on the root element
     document.documentElement.setAttribute('data-theme', mode);
-    // Update meta theme-color for UI chrome
     try {
         const meta = document.querySelector('meta[name="theme-color"]');
         if (meta) {
@@ -375,7 +343,7 @@ function setTheme(mode, skipSave = false) {
         }
     } catch (e) {}
 
-    if (!skipSave) localStorage.setItem('neetTheme', mode);
+    if (!skipSave) OS.Storage.set('neetTheme', mode);
     updateSettingsModalButtons();
 }
 
@@ -391,7 +359,7 @@ function exportPlannerData() {
     const data = {
         syllabus: currentSyllabus,
         edits: plannerEdits,
-        startDate: localStorage.getItem('neetPlanStartDate')
+        startDate: OS.Storage.get('neetPlanStartDate', null)
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
     const a = document.createElement('a');
@@ -405,7 +373,7 @@ function exportPlannerData() {
 function toggleTask(dayId) {
     if (completed.includes(dayId)) completed = completed.filter(id => id !== dayId);
     else completed.push(dayId);
-    localStorage.setItem('neetCalendarCompleted', JSON.stringify(completed));
+    OS.Storage.set('neetCalendarCompleted', completed);
     renderCalendar(); updatePlannerStats();
 }
 
@@ -422,7 +390,6 @@ function updatePlannerStats() {
     let total = 0, done = 0;
     for (let key in scheduleMap) {
         const item = scheduleMap[key];
-        // Count actionable items
         let isTask = (item.type === 'task');
         if(plannerEdits[item.dayId] && plannerEdits[item.dayId].s !== 'O') isTask = true;
         
@@ -432,7 +399,6 @@ function updatePlannerStats() {
         }
     }
     
-    // Calculate percentage for bar width
     const pct = total === 0 ? 0 : Math.round((done / total) * 100);
     
     const bar = document.getElementById('progressBar');
@@ -441,19 +407,16 @@ function updatePlannerStats() {
     if(bar) bar.style.width = `${pct}%`;
     if(txt) txt.innerText = `${done} / ${total} Tasks`;
 
-    // --- NEW: CONFETTI TRIGGER ---
     if (total > 0 && done === total) {
-        // Check if we haven't celebrated yet to prevent infinite loops while browsing
         if (!window.hasCelebrated) {
             triggerCelebration();
-            window.hasCelebrated = true; // Mark as done so it doesn't fire on every reload
+            window.hasCelebrated = true; 
         }
     } else {
-        window.hasCelebrated = false; // Reset flag if they uncheck a box
+        window.hasCelebrated = false; 
     }
 }
 
-// THE CONFETTI EFFECT (Cannons from Left & Right)
 function triggerCelebration() {
     var duration = 3 * 1000;
     var animationEnd = Date.now() + duration;
@@ -470,25 +433,25 @@ function triggerCelebration() {
 
         var particleCount = 50 * (timeLeft / duration);
         
-        // Fire from left edge
         confetti(Object.assign({}, defaults, { 
             particleCount, 
             origin: { x: random(0.1, 0.3), y: Math.random() - 0.2 } 
         }));
         
-        // Fire from right edge
         confetti(Object.assign({}, defaults, { 
             particleCount, 
             origin: { x: random(0.7, 0.9), y: Math.random() - 0.2 } 
         }));
     }, 250);
 }
+
 function resetPlannerData() {
     if(confirm("Reset all progress and edits?")) {
         completed = [];
         plannerEdits = {}; 
-        localStorage.setItem('neetCalendarCompleted', JSON.stringify(completed));
-        localStorage.setItem('neetPlannerEdits', JSON.stringify(plannerEdits));
-        renderCalendar(); updatePlannerStats();
+        OS.Storage.set('neetCalendarCompleted', completed);
+        OS.Storage.set('neetPlannerEdits', plannerEdits);
+        renderCalendar(); 
+        updatePlannerStats();
     }
 }

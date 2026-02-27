@@ -1,6 +1,6 @@
-/* =================================================================
-   CUSTOM RESIZABLE IMAGE PLUGIN (Extends native ImageTool)
-   ================================================================= */
+/* ==============================
+   CUSTOM RESIZABLE IMAGE PLUGIN 
+   ============================== */
 class ResizableImage extends window.ImageTool {
     constructor(config) {
         super(config);
@@ -17,9 +17,6 @@ class ResizableImage extends window.ImageTool {
         handle.className = 'neet-image-resize-handle';
         handle.innerHTML = '⤡'; 
         handle.title = 'Drag to resize';
-        
-        // 👉 THIS IS THE MAGIC LINE FOR HOVER 👈
-        // It forces the cursor to be the diagonal arrow the second your mouse touches it
         handle.style.cursor = 'nwse-resize';
 
         let startX, startWidth;
@@ -40,16 +37,15 @@ class ResizableImage extends window.ImageTool {
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
             document.body.style.cursor = 'default';
+            document.body.classList.remove('is-resizing'); // Removes the global override
         };
 
         handle.addEventListener('mousedown', (e) => {
             e.preventDefault();
             startX = e.clientX;
             startWidth = wrapper.offsetWidth;
-            
-            // This keeps the cursor as the diagonal arrow while you are actively dragging
             document.body.style.cursor = 'nwse-resize';
-            
+            document.body.classList.add('is-resizing'); // Triggers the global override
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
         });
@@ -119,9 +115,9 @@ function swapCanvas(sub, btn) {
     }
 }
 
-/* =================================================================
-   NEET OS CUSTOM TABLE INJECTION 
-   ================================================================= */
+/* =======================
+   CUSTOM TABLE INJECTION 
+   ======================= */
 (function() {
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('neet-add-both-btn')) {
@@ -151,7 +147,7 @@ function swapCanvas(sub, btn) {
 })();
 
 /* =================================================================
-   🎬 NEET OS ACTION LOGGER (Google Docs Style Undo/Redo)
+    ACTION LOGGER (Undo/Redo System with Debouncing & Storage Sync)
    ================================================================= */
 const ActionLogger = {
     history: { phy: { stack: [], index: 0 }, chem: { stack: [], index: 0 }, bio: { stack: [], index: 0 } },
@@ -195,7 +191,7 @@ const ActionLogger = {
                         hist.index--;
                     }
 
-                    localStorage.setItem(`neetContent_${subject}`, dataStr);
+                    OS.Storage.set(`neetContent_${subject}`, data);
 
                 } catch (e) {
                     console.error("ActionLogger failed:", e);
@@ -212,9 +208,9 @@ const ActionLogger = {
         if (hist.index > 0) {
             this.isRestoring[subject] = true;
             hist.index--;
-            // Fixed the API call here!
-            await editorInstances[subject].blocks.render(JSON.parse(hist.stack[hist.index]));
-            localStorage.setItem(`neetContent_${subject}`, hist.stack[hist.index]);
+            const parsedData = JSON.parse(hist.stack[hist.index]);
+            await editorInstances[subject].blocks.render(parsedData);
+            OS.Storage.set(`neetContent_${subject}`, parsedData);
             setTimeout(() => { this.isRestoring[subject] = false; }, 100); 
         }
     },
@@ -224,49 +220,45 @@ const ActionLogger = {
         if (hist.index < hist.stack.length - 1) {
             this.isRestoring[subject] = true;
             hist.index++;
-            // Fixed the API call here!
-            await editorInstances[subject].blocks.render(JSON.parse(hist.stack[hist.index]));
-            localStorage.setItem(`neetContent_${subject}`, hist.stack[hist.index]);
+            const parsedData = JSON.parse(hist.stack[hist.index]);
+            await editorInstances[subject].blocks.render(parsedData);
+            OS.Storage.set(`neetContent_${subject}`, parsedData);
             setTimeout(() => { this.isRestoring[subject] = false; }, 100);
         }
     }
 };
 
-// 🎨 INJECT FOCUS MODE CSS ONCE
 if (!document.getElementById('focus-mode-styles')) {
     const style = document.createElement('style');
     style.id = 'focus-mode-styles';
     style.innerHTML = `
-        /* Perfectly matched Editor.js native button */
         .neet-focus-btn {
             position: absolute;
             top: 15px;
             right: 15px;
             z-index: 100;
             background: transparent;
-            color: var(--color-text-accent, #888);
+            color: var(--color-text-accent);
             border: none;
             border-radius: 5px;
-            width: 28px; /* Matched to the + button size */
+            width: 28px;
             height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             font-size: 18px;
-            font-weight: 300; /* Forces the icon to be thin and elegant */
-            opacity: 0.6; /* Starts slightly faded like native tools */
+            font-weight: 300;
+            opacity: 0.6;
             transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
         }
         
-        /* The exact soft-red transparent hover effect */
         .neet-focus-btn:hover {
-            background-color: rgba(255, 76, 76, 0.1); /* 10% opacity red background */
-            color: var(--color-primary, #ff4c4c); /* Light red icon */
-            opacity: 1; /* Wakes up completely on hover */
+            background-color: rgba(255, 76, 76, 0.1); 
+            color: var(--color-primary); 
+            opacity: 1; 
         }
 
-        /* The Exam-Mode Style Overlay */
         .editor-focus-mode {
             position: fixed !important;
             top: 0 !important;
@@ -274,18 +266,17 @@ if (!document.getElementById('focus-mode-styles')) {
             width: 100vw !important;
             height: 100vh !important;
             z-index: 999999 !important;
-            background-color: var(--bg-color, #121212) !important;
+            background-color: var(--color-bg-dark) !important;
             padding: 40px 15vw !important; 
             overflow-y: auto !important;
         }
         
-        /* Full Screen Close Button */
         .editor-focus-mode .neet-focus-btn {
             position: fixed;
             top: 20px;
             right: 30px;
-            font-size: 20px; /* Make the X slightly larger so it's easy to click */
-            font-weight: 200; /* Make the X ultra-thin */
+            font-size: 20px;
+            font-weight: 200; 
         }
     `;
     document.head.appendChild(style);
@@ -302,7 +293,6 @@ function initEditorInstance(subject) {
     
     containerEl.setAttribute('spellcheck', 'false');
 
-    // --- ⛶ NATIVE FOCUS MODE BUTTON ---
     containerEl.style.position = 'relative'; 
     
     const focusBtn = document.createElement('button');
@@ -313,7 +303,6 @@ function initEditorInstance(subject) {
     focusBtn.onclick = () => {
         const isFocus = containerEl.classList.toggle('editor-focus-mode');
         if (isFocus) {
-            // Replaced the thick '✖' with a much thinner '✕' character
             focusBtn.innerHTML = '✕';
             document.body.style.overflow = 'hidden'; 
         } else {
@@ -322,7 +311,6 @@ function initEditorInstance(subject) {
         }
     };
     containerEl.appendChild(focusBtn);
-    // ----------------------------------
 
     let initialData = {
         time: Date.now(),
@@ -332,12 +320,9 @@ function initEditorInstance(subject) {
         ]
     };
 
-    const rawData = localStorage.getItem(storageKey);
-    if (rawData) {
-        try {
-            const parsed = JSON.parse(rawData);
-            if (parsed.blocks) initialData = parsed; 
-        } catch (e) {}
+    const parsed = OS.Storage.get(storageKey, null);
+    if (parsed && parsed.blocks) {
+        initialData = parsed;
     }
 
     ActionLogger.init(subject, initialData);
@@ -354,7 +339,7 @@ function initEditorInstance(subject) {
     });
 }
 
-// 🛡️ KEYBOARD INTERCEPTOR
+// KEYBOARD INTERCEPTOR
 window.addEventListener('keydown', (e) => {
     const activeTab = document.querySelector('.canvas-tab.active');
     if (!activeTab) return;

@@ -1,6 +1,6 @@
-/* =========================================
-   SECTION 5: EXAM LOG LOGIC
-   ========================================= */
+/* ===============
+   EXAM LOG LOGIC
+   =============== */
 let editIndex = -1;
 let myChart = null;
 
@@ -36,7 +36,7 @@ function calcGrandTotal() {
 }
 
 function loadLogs() {
-    const logs = JSON.parse(localStorage.getItem('examLogs')) || [];
+    const logs = OS.Storage.get('examLogs', []);
     const tbody = document.querySelector('#logTable tbody');
     if(!tbody) return;
     tbody.innerHTML = ''; 
@@ -46,7 +46,7 @@ function loadLogs() {
         const displayDate = log.date ? new Date(log.date).toLocaleDateString() : '-';
         row.innerHTML = `
             <td class="log-td date-col">${displayDate}</td>
-            <td class="log-td" style="font-weight:bold;">${log.testNo}</td>
+            <td class="log-td text-bold">${log.testNo}</td>
             <td class="log-td sub-col">${log.phy.left}</td><td class="log-td sub-col">${log.phy.wrong}</td><td class="log-td main-mark">${log.phy.marks}</td>
             <td class="log-td sub-col">${log.chem.left}</td><td class="log-td sub-col">${log.chem.wrong}</td><td class="log-td main-mark">${log.chem.marks}</td>
             <td class="log-td sub-col">${log.bio.left}</td><td class="log-td sub-col">${log.bio.wrong}</td><td class="log-td main-mark">${log.bio.marks}</td>
@@ -70,7 +70,7 @@ function handleLogSubmit() {
 
     // VALIDATION
     if(!testNo) { 
-        testInput.style.borderColor = '#ff3b3b';
+        testInput.classList.add('input-error');
         testInput.focus();
         return; 
     }
@@ -98,21 +98,29 @@ function handleLogSubmit() {
         total: formData.get('total') || 0
     };
 
-    const logs = JSON.parse(localStorage.getItem('examLogs')) || [];
-    if (editIndex === -1) { logs.push(logData); } else { logs[editIndex] = logData; editIndex = -1; toggleEditModeStyles(false); }
-    localStorage.setItem('examLogs', JSON.stringify(logs));
-    clearForm(); loadLogs(); 
+    const logs = OS.Storage.get('examLogs', []);
+    if (editIndex === -1) { 
+        logs.push(logData); 
+    } else { 
+        logs[editIndex] = logData; 
+        editIndex = -1; 
+        toggleEditModeStyles(false); 
+    }
+    
+    OS.Storage.set('examLogs', logs);
+    clearForm(); 
+    loadLogs(); 
+    
     if(typeof updateDashboard === 'function') updateDashboard();
 }
 
 function startEdit(index) {
-    const logs = JSON.parse(localStorage.getItem('examLogs')) || [];
+    const logs = OS.Storage.get('examLogs', []);
     const log = logs[index];
     if (!log) return;
     editIndex = index;
     toggleEditModeStyles(true);
     
-    // Use helper from main script to set date
     if(typeof setDateInputValue === 'function') {
         setDateInputValue('examDateLog', 'examDateLogText', log.date);
     }
@@ -124,43 +132,55 @@ function startEdit(index) {
     calcPhy(); calcChem(); calcBio();
 }
 
-function cancelEdit() { editIndex = -1; toggleEditModeStyles(false); clearForm(); }
+function cancelEdit() { 
+    editIndex = -1; 
+    toggleEditModeStyles(false); 
+    clearForm(); 
+}
 
 function toggleEditModeStyles(isEditing) {
-    const mainBtn = document.getElementById('mainBtn'); const cancelBtn = document.getElementById('cancelBtn');
-    if (isEditing) { mainBtn.innerText = "UPDATE LOG"; cancelBtn.style.display = 'flex'; } else { mainBtn.innerText = "ADD LOG"; cancelBtn.style.display = 'none'; }
+    const mainBtn = document.getElementById('mainBtn'); 
+    const cancelBtn = document.getElementById('cancelBtn');
+    if (isEditing) { 
+        mainBtn.innerText = "UPDATE LOG"; 
+        cancelBtn.style.display = 'flex'; 
+    } else { 
+        mainBtn.innerText = "ADD LOG"; 
+        cancelBtn.style.display = 'none'; 
+    }
 }
 
 function deleteExamLog(index) {
-    const logs = JSON.parse(localStorage.getItem('examLogs')) || [];
+    const logs = OS.Storage.get('examLogs', []);
     logs.splice(index, 1);
-    localStorage.setItem('examLogs', JSON.stringify(logs));
+    OS.Storage.set('examLogs', logs);
+    
     if (editIndex === index) cancelEdit();
     loadLogs(); 
+    
     if(typeof updateDashboard === 'function') updateDashboard();
 }
 
 function clearForm() {
     document.querySelectorAll('.log-form input').forEach(input => {
-        // Don't clear date input
         if(input.type !== 'date') input.value = '';
-        // Reset border color for test input
-        if(input.id === 'testNoLog') input.style.borderColor = '';
+        if(input.id === 'testNoLog') input.classList.remove('input-error');
     });
-    // Reset Date to Today using helper
+    
     const getTodayString = () => {
         const now = new Date();
         const offset = now.getTimezoneOffset();
         const local = new Date(now.getTime() - (offset*60*1000));
         return local.toISOString().split('T')[0];
     };
+    
     if(typeof setDateInputValue === 'function') {
         setDateInputValue('examDateLog', 'examDateLogText', getTodayString());
     }
 }
 
 function exportToCSV() {
-    const logs = JSON.parse(localStorage.getItem('examLogs')) || [];
+    const logs = OS.Storage.get('examLogs', []);
     if (logs.length === 0) { alert("No data to export!"); return; }
     let csvContent = "Date,Test No,Phy Left,Phy Wrong,Phy Marks,Chem Left,Chem Wrong,Chem Marks,Bio Left,Bio Wrong,Bio Marks,Total\n";
     logs.forEach(log => {
@@ -177,17 +197,28 @@ function exportToCSV() {
 function updateChart(logs) {
     const ctx = document.getElementById('scoreChart').getContext('2d');
     if(myChart) myChart.destroy();
+    
+    // Dynamically fetch theme colors from CSS variables to ensure the chart is Theme-Aware
+    const styles = getComputedStyle(document.documentElement);
+    const colorPrimary = styles.getPropertyValue('--color-primary').trim() || '#ff3b3b';
+    const colorPhy = styles.getPropertyValue('--color-physics').trim() || '#4a90e2';
+    const colorChem = styles.getPropertyValue('--color-chemistry').trim() || '#f5a623';
+    const colorBio = styles.getPropertyValue('--color-biology').trim() || '#7ed321';
+
+    // Parse the primary color to RGBA for the background gradient
     const gradientTotal = ctx.createLinearGradient(0, 0, 0, 400);
-    gradientTotal.addColorStop(0, 'rgba(255, 59, 59, 0.5)'); gradientTotal.addColorStop(1, 'rgba(255, 59, 59, 0)');
+    gradientTotal.addColorStop(0, 'rgba(255, 59, 59, 0.5)'); 
+    gradientTotal.addColorStop(1, 'rgba(255, 59, 59, 0)');
+    
     myChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: logs.map(l=>l.testNo),
             datasets: [
-                { label: 'Total', data: logs.map(l=>l.total), borderColor: '#ff3b3b', backgroundColor: gradientTotal, borderWidth: 3, fill: true, tension: 0.3 },
-                { label: 'Phy', data: logs.map(l=>l.phy.marks), borderColor: '#4a90e2', borderWidth: 2, borderDash:[5,5], tension:0.3 },
-                { label: 'Chem', data: logs.map(l=>l.chem.marks), borderColor: '#f5a623', borderWidth: 2, borderDash:[5,5], tension:0.3 },
-                { label: 'Bio', data: logs.map(l=>l.bio.marks), borderColor: '#7ed321', borderWidth: 2, borderDash:[5,5], tension:0.3 }
+                { label: 'Total', data: logs.map(l=>l.total), borderColor: colorPrimary, backgroundColor: gradientTotal, borderWidth: 3, fill: true, tension: 0.3 },
+                { label: 'Phy', data: logs.map(l=>l.phy.marks), borderColor: colorPhy, borderWidth: 2, borderDash:[5,5], tension:0.3 },
+                { label: 'Chem', data: logs.map(l=>l.chem.marks), borderColor: colorChem, borderWidth: 2, borderDash:[5,5], tension:0.3 },
+                { label: 'Bio', data: logs.map(l=>l.bio.marks), borderColor: colorBio, borderWidth: 2, borderDash:[5,5], tension:0.3 }
             ]
         },
         options: { responsive: true, interaction: { mode:'index', intersect:false }, scales: { y: { beginAtZero: true } } }

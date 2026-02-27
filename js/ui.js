@@ -139,7 +139,7 @@
             }
 
             if (hasSelection) items.push(`<div class="ctx-btn" data-cmd="todo">📌 Extract to To-Do</div>`);
-            items.push(`<div class="ctx-btn" data-cmd="clear" style="color:#ff3b3b;">🗑️ Clear</div>`);
+            items.push('<div class="ctx-btn" data-cmd="clear" style="color:var(--color-primary);">🗑️ Clear</div>');
         }
 
         menu.innerHTML = items.join('<div style="height:1px; background:var(--color-border); margin:4px 0;"></div>');
@@ -354,10 +354,10 @@
             if (cmd === 'clear') {
                 if (isRichText) {
                     if (selectedText.length > 0) {
-                        // PATH 1: Text is highlighted. Just backspace the selection!
+                        // PATH 1: Text is highlighted. Just backspace the selection
                         document.execCommand('delete', false, null);
                     } else {
-                        // PATH 2: Nothing highlighted. Nuke the whole block!
+                        // PATH 2: Nothing highlighted. Nuke the whole block
                         activeCanvas.innerHTML = '';
                         activeCanvas.dispatchEvent(new KeyboardEvent('keydown', {
                             key: 'Backspace', code: 'Backspace', keyCode: 8, which: 8, bubbles: true
@@ -365,10 +365,10 @@
                     }
                 } else {
                     if (selectedText.length > 0) {
-                        // PATH 3: Journal text highlighted. Backspace the selection!
+                        // PATH 3: Journal text highlighted. Backspace the selection
                         document.execCommand('delete', false, null);
                     } else {
-                        // PATH 4: Journal is active but nothing highlighted. Wipe the whole Journal!
+                        // PATH 4: Journal is active but nothing highlighted. Wipe the whole Journal
                         activeCanvas.value = '';
                     }
                 }
