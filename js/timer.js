@@ -16,7 +16,7 @@ function selectSubject(subject, btn) {
     document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     
-    // Update Ring Color based on subject 
+    // Update Ring Color based on subject
     const ring = document.getElementById('timerProgress');
     if(ring) {
         if(subject === 'Physics') ring.style.stroke = 'var(--color-physics)';

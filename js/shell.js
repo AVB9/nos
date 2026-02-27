@@ -98,7 +98,7 @@ function closeDataModal(e) {
 function exportData() {
     const timestamp = new Date().getTime();
 
-    // 1. Master OS Log 
+    // 1. Build the Master OS Log
     const masterData = {
         version: "4.0.0",
         timestamp: timestamp,

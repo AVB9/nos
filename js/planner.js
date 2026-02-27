@@ -269,37 +269,37 @@ function closePlannerMenu(e) {
         setTimeout(() => overlay.style.display = 'none', 300); 
     }
 }
-
-function processPlannerFile(file) {
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const json = JSON.parse(e.target.result);
-            const planData = Array.isArray(json) ? json : json.syllabus;
-            
-            if(json.edits) {
-                plannerEdits = json.edits;
-                OS.Storage.set('neetPlannerEdits', plannerEdits);
-            }
-            if(json.startDate) {
-                OS.Storage.set('neetPlanStartDate', json.startDate);
-            }
-            
-            OS.Storage.set('neetActivePlanData', planData);
-            currentSyllabus = planData;
-            
-            calculateScheduleMap(); 
-            renderCalendar(); 
-            updatePlannerStats();
-            
-            closePlannerMenu(null); 
-        } catch(err) { 
-            alert("Error reading plan JSON."); 
+        // NEW: Core logic to process planner file silently
+        function processPlannerFile(file) {
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    const planData = Array.isArray(json) ? json : json.syllabus;
+                    
+                    if(json.edits) {
+                        plannerEdits = json.edits;
+                        localStorage.setItem('neetPlannerEdits', JSON.stringify(plannerEdits));
+                    }
+                    if(json.startDate) {
+                        localStorage.setItem('neetPlanStartDate', json.startDate);
+                    }
+                    
+                    localStorage.setItem('neetActivePlanData', JSON.stringify(planData));
+                    currentSyllabus = planData;
+                    
+                    calculateScheduleMap(); 
+                    renderCalendar(); 
+                    updatePlannerStats();
+                    
+                    closePlannerMenu(null); // Close menu instantly if open
+                } catch(err) { 
+                    alert("Error reading plan JSON."); 
+                }
+            };
+            reader.readAsText(file);
         }
-    };
-    reader.readAsText(file);
-}
 
 function handlePlanUpload(input) {
     processPlannerFile(input.files[0]);
@@ -307,7 +307,12 @@ function handlePlanUpload(input) {
 }
 
 /* =========================================
-   SETTINGS / THEME MODAL
+   DEBUG CONTEXT MENU LOGIC
+   ========================================= */
+
+
+/* =========================================
+   SETTINGS / THEME HANDLERS
    ========================================= */
 function openSettingsModal() {
     let overlay = document.getElementById('settingsModalOverlay');

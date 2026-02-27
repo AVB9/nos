@@ -45,7 +45,7 @@ class ResizableImage extends window.ImageTool {
             startX = e.clientX;
             startWidth = wrapper.offsetWidth;
             document.body.style.cursor = 'nwse-resize';
-            document.body.classList.add('is-resizing'); // Triggers the global override
+            
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
         });
