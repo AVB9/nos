@@ -68,43 +68,29 @@
         .z-modals { z-index: var(--z-modals); }
         .z-exam { z-index: var(--z-exam); }
 
-        /* =================================================================
-           SECTION 1: OVERLAYS 
-           ================================================================= */
-        /* Ensure edit modal overlay CSS is loaded first to avoid being stuck */
-        #editModalOverlay,
-        #rankModalOverlay,
-        #examSetupModalOverlay,
-        #dataModalOverlay,
-        #avgScoreModalOverlay,
-        #plannerMenuOverlay,
-        #settingsModalOverlay,
-        #linkModalOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            z-index: var(--z-modals);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
+            /* =================================================================
+            SECTION 1: OVERLAYS 
+            ================================================================= */
+            
+            .modal-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(8px);
+                z-index: var(--z-modals);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
 
-        #editModalOverlay.active,
-        #rankModalOverlay.active,
-        #examSetupModalOverlay.active,
-        #dataModalOverlay.active,
-        #avgScoreModalOverlay.active,
-        #plannerMenuOverlay.active,
-        #settingsModalOverlay.active,
-        #linkModalOverlay.active {
-            opacity: 1;
-        }
+            .modal-backdrop.active {
+                opacity: 1;
+            }
 
         /* Exam Mode Overlay - HIGHEST PRIORITY */
         #examModeOverlay {
@@ -559,7 +545,7 @@
         /* =================================================================
            SECTION 7: MODAL CONTAINERS & RANK SYSTEM
            ================================================================= */
-        .rank-card-modal {
+        .modal-card {
             background: var(--color-bg-dark);
             border: 2px solid var(--color-border);
             border-radius: 20px;
@@ -574,11 +560,7 @@
             z-index: var(--z-content);
         }
 
-        #rankModalOverlay.active .rank-card-modal,
-        #examSetupModalOverlay.active .rank-card-modal,
-        #dataModalOverlay.active .rank-card-modal,
-        #avgScoreModalOverlay.active .rank-card-modal,
-        #plannerMenuOverlay.active .rank-card-modal {
+        .modal-backdrop.active .modal-card {
             transform: scale(1);
         }
 
@@ -2354,6 +2336,22 @@
 
         /* Line height utilities */
         .leading-1-5 { line-height: 1.5; }
+
+        /* Layout & Spacing Utilities */
+        .flex-1 { flex: 1; }
+        .grid-3-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .d-block { display: block; }
+        .m-auto { margin: 0 auto; }
+        .pt-15 { padding-top: 15px; }
+
+        /* Typography & Border Utilities */
+        .text-left { text-align: left !important; }
+        .text-black { color: var(--color-black) !important; }
+        .border-none { border: none !important; }
+
+        /* Component-Specific Utilities */
+        .bg-physics { background-color: var(--color-physics) !important; }
+        .modal-divider { height: 1px; background-color: var(--color-border); margin: 15px 0; border: none; }
 
         /* =================================================================
         SECTION 21: DRAG & DROP OVERLAYS

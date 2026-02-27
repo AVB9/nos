@@ -437,23 +437,6 @@
         <div class="progress-fill" id="progressBar"></div>
         </div>
 </div>
-
-    <!-- NEW: SETTINGS / THEME MODAL -->
-    <div id="settingsModalOverlay" onclick="closeSettingsModal(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
-        <div class="rank-card-modal" style="max-width:420px;">
-            <div class="flex-between mb-20">
-                <h2 class="text-white" style="margin:0;">Appearance</h2>
-                <button class="btn-mini btn-close-accent" onclick="closeSettingsModal(null)" style="border:none; font-size:1.5rem;">×</button>
-            </div>
-
-            <p class="text-default mb-15">Choose a visual theme for the app. Your selection will be saved.</p>
-
-            <div style="display:flex; gap:10px; margin-bottom:5px;">
-                <button id="themeDarkBtn" class="pill-btn" onclick="setTheme('dark')">Dark Mode</button>
-                <button id="themeDarkestBtn" class="pill-btn" onclick="setTheme('darkest')">Darkest Mode</button>
-            </div>
-        </div>
-    </div>
         </section>
 
         <!-- =================================================================
@@ -569,20 +552,18 @@
          (Rank, Exam Setup, Data Backup, Avg Score, Planner Edit, EXAM MODE, Menu)
          ================================================================= -->
 
-    <!-- NEW: RANK DETAILS MODAL -->
-    <div id="rankModalOverlay" onclick="closeRankModal(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
-        <div class="rank-card-modal">
+    <!-- RANK MODAL -->
+<div id="rankModalOverlay" class="modal-backdrop" onclick="closeRankModal(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
+        <div class="modal-card">
             <div class="flex-between mb-10">
-                <h2 class="text-white" style="margin:0;">Rank Progression</h2>
-                <button class="btn-mini btn-close-accent" onclick="closeRankModal(null)" style="border:none; font-size:1.5rem;">×</button>
+                <h2 class="text-white mb-0">Rank Progression</h2>
+                <button class="btn-mini btn-close-accent border-none font-1-5rem" onclick="closeRankModal(null)">×</button>
             </div>
             
-            <!-- Rank Scroll Buttons & Container -->
             <div class="rank-scroll-wrapper">
                 <button class="rank-scroll-btn left" onclick="scrollRank(-1)">‹</button>
                 <div id="rankListContainer" class="rank-list">
-                    <!-- Ranks injected via JS -->
-                </div>
+                    </div>
                 <button class="rank-scroll-btn right" onclick="scrollRank(1)">›</button>
             </div>
 
@@ -598,170 +579,184 @@
         </div>
     </div>
 
-    <!-- NEW: EXAM SETUP MODAL -->
-    <div id="examSetupModalOverlay" onclick="closeExamModal(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
-        <div class="rank-card-modal">
+    <!-- EXAM SETUP MODAL -->
+    <div id="examSetupModalOverlay" class="modal-backdrop" onclick="closeExamModal(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
+        <div class="modal-card">
             <div class="flex-between mb-20">
-                <h2 class="text-white" style="margin:0;">Exam Configuration</h2>
-                <button class="btn-mini btn-close-accent" onclick="closeExamModal(null)" style="border:none; font-size:1.5rem;">×</button>
+                <h2 class="text-white mb-0">Exam Configuration</h2>
+                <button class="btn-mini btn-close-accent border-none font-1-5rem" onclick="closeExamModal(null)">×</button>
             </div>
             
             <label class="text-default mb-10 block">Select Type:</label>
             <div class="flex-row flex-gap-10 mb-20">
-                <button class="pill-btn active" id="btnFST" data-type="fst" onclick="selectExamType('FST')" style="flex:1; text-align:center;">FST (Full)</button>
-                <button class="pill-btn" id="btnPT" data-type="pt" onclick="selectExamType('PT')" style="flex:1; text-align:center;">PT (Part)</button>
+                <button class="pill-btn active flex-1 text-center" id="btnFST" data-type="fst" onclick="selectExamType('FST')">FST (Full)</button>
+                <button class="pill-btn flex-1 text-center" id="btnPT" data-type="pt" onclick="selectExamType('PT')">PT (Part)</button>
             </div>
 
             <label class="text-default mb-10 block">Test Number:</label>
             <input type="number" id="modalTestNo" class="exam-input" placeholder="e.g. 05" min="1"
-                   oninput="if(this.value < 0) this.value = Math.abs(this.value); this.style.borderColor=''" 
-                   onfocus="this.style.borderColor=''">
+                   oninput="if(this.value < 0) this.value = Math.abs(this.value); this.classList.remove('input-error');" 
+                   onfocus="this.classList.remove('input-error');">
 
             <button class="btn-large btn-focus exam-start-btn" onclick="confirmExamStart()">BEGIN EXAM</button>
         </div>
     </div>
 
-    <!-- NEW: DATA BACKUP MODAL -->
-    <div id="dataModalOverlay" onclick="closeDataModal(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
-        <div class="rank-card-modal">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h2 style="margin:0; color:#fff;">Data Backup & Restore</h2>
-                <button class="btn-mini btn-close-accent" onclick="closeDataModal(null)" style="border:none; font-size:1.5rem;">×</button>
+    <!-- BACKUP MODAL -->
+    <div id="dataModalOverlay" class="modal-backdrop" onclick="closeDataModal(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
+        <div class="modal-card">
+            <div class="flex-between mb-20">
+                <h2 class="text-white mb-0">Data Backup & Restore</h2>
+                <button class="btn-mini btn-close-accent border-none font-1-5rem" onclick="closeDataModal(null)">×</button>
             </div>
             
             <p class="text-default text-center leading-1-5 mb-20">
                 Save your progress to a file to prevent data loss when deleting the app or clearing browser data.
             </p>
 
-            <button class="btn-large btn-focus mb-15" onclick="exportData()" style="background:#4a90e2; color:#121212;">DOWNLOAD BACKUP</button>
+            <button class="btn-large mb-15 bg-physics border-physics text-black" onclick="exportData()">DOWNLOAD BACKUP</button>
             
-            <div style="height:1px; background:#333; margin:15px 0;"></div>
+            <hr class="modal-divider">
             
-            <label class="btn-large btn-start text-center block" style="cursor:pointer; color:#aaa; border-color:#444;">
+            <label class="btn-large btn-start text-center block cursor-pointer text-dim border-light">
                 RESTORE FROM FILE
                 <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(event)">
             </label>
         </div>
     </div>
 
-    <!-- NEW: AVERAGE SCORE MODAL -->
-    <div id="avgScoreModalOverlay" onclick="closeAverageScoreModal(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
-        <div class="rank-card-modal">
+    <!-- AVERAGE SCORE MODAL -->
+    <div id="avgScoreModalOverlay" class="modal-backdrop" onclick="closeAverageScoreModal(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
+        <div class="modal-card">
             <div class="flex-between mb-20">
-                <h2 class="text-white" style="margin:0;">Performance Analysis</h2>
-                <button class="btn-mini btn-close-accent" onclick="closeAverageScoreModal(null)" style="border:none; font-size:1.5rem;">×</button>
+                <h2 class="text-white mb-0">Performance Analysis</h2>
+                <button class="btn-mini btn-close-accent border-none font-1-5rem" onclick="closeAverageScoreModal(null)">×</button>
             </div>
             
-            <!-- Average Breakdown -->
-            <div class="text-center mb-25" style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-                <div class="bg-252525 p-15 rounded-10 border-physics">
+            <div class="grid-3-col mb-25 text-center">
+                <div class="bg-medium p-15 rounded-10 border-physics">
                     <div class="text-physics font-0-9rem mb-5">PHYSICS</div>
                     <div id="modalAvgPhy" class="font-1-5rem text-bold text-white">0</div>
                     <div id="modalStatsPhy" class="font-0-8rem text-default mt-5">L: 0 | W: 0</div>
                 </div>
-                <div class="bg-252525 p-15 rounded-10 border-chemistry">
+                <div class="bg-medium p-15 rounded-10 border-chemistry">
                     <div class="text-chemistry font-0-9rem mb-5">CHEMISTRY</div>
                     <div id="modalAvgChem" class="font-1-5rem text-bold text-white">0</div>
                     <div id="modalStatsChem" class="font-0-8rem text-default mt-5">L: 0 | W: 0</div>
                 </div>
-                <div class="bg-252525 p-15 rounded-10 border-biology">
+                <div class="bg-medium p-15 rounded-10 border-biology">
                     <div class="text-biology font-0-9rem mb-5">BIOLOGY</div>
                     <div id="modalAvgBio" class="font-1-5rem text-bold text-white">0</div>
                     <div id="modalStatsBio" class="font-0-8rem text-default mt-5">L: 0 | W: 0</div>
                 </div>
             </div>
 
-            <button class="btn-large btn-focus" style="margin: 0 auto; display: block;" onclick="goToExamLogsFromModal()">VIEW ALL LOGS</button>
+            <button class="btn-large btn-focus d-block m-auto" onclick="goToExamLogsFromModal()">VIEW ALL LOGS</button>
         </div>
     </div>
 
-    <div id="editModalOverlay" onclick="closeEditModal(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
-        <div class="rank-card-modal">
-        <div class="flex-between mb-20">
-            <h2 class="text-white" style="margin:0;">Edit Day Plan</h2>
-            <button class="btn-mini btn-close-accent" onclick="closeEditModal(null)" style="border:none; font-size:1.5rem;">×</button>
-        </div>
-
-        <input type="hidden" id="editDayId">
-        <input type="hidden" id="editSubjectValue">
-
-        <label class="text-default mb-10 block">Select Subject:</label>
-        <div class="pill-toolbar flex-start flex-gap-8 mb-20">
-    <button class="pill-btn" data-type="P" onclick="setEditSubject('P', this)">Physics</button>
-    <button class="pill-btn" data-type="C" onclick="setEditSubject('C', this)">Chemistry</button>
-    <button class="pill-btn" data-type="B" onclick="setEditSubject('B', this)">Biology</button>
-    <button class="pill-btn" data-type="O" onclick="setEditSubject('O', this)">Day Off</button>
-</div>
-
-        <label class="text-default mb-10 block">Topic / Note:</label>
-        <input type="text" id="editTopicInput" 
-       style="width:100%; background:#252525; border:1px solid #444; color:#fff; padding:15px; border-radius:10px; font-family:'Nova Flat', sans-serif; font-size:1rem; outline:none; margin-bottom:30px; transition: border-color 0.3s ease;" 
-       placeholder="Enter topic name..."
-       oninput="this.style.borderColor='#444'; this.placeholder='Enter topic name...'">
-
-        <div class="flex-row flex-gap-10">
-            <button class="btn-large btn-start btn-reset-danger" onclick="clearEditTask()">Reset to Default</button>
-            <button class="btn-large btn-focus" onclick="saveEditTask()">SAVE CHANGE</button>
-        </div>
-    </div>
-</div>
-
-<div id="plannerMenuOverlay" onclick="closePlannerMenu(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
-    <div class="rank-card-modal" style="width: 400px;">
-        
-        <div class="flex-between mb-25">
-            <h2 class="text-white" style="margin:0; font-family: 'Nova Flat', sans-serif;">Planner Options</h2>
-            <button class="btn-mini btn-close-accent" onclick="closePlannerMenu(null)" style="border:none; font-size:1.5rem;">×</button>
-        </div>
-        
-        <input type="file" id="planUploader" accept=".js,.json,.txt" class="hidden" onchange="handlePlanUpload(this)">
-        
-        <div class="modal-actions-grid">
-            
-            <button class="modal-action-btn" onclick="document.getElementById('planUploader').click()">
-                <div class="icon-box">📥</div>
-                <div class="text-group">
-                    <span class="label">Import Plan</span>
-                    <span class="sub">Load a .json or .js schedule file</span>
-                </div>
-            </button>
-            
-            <button class="modal-action-btn" onclick="exportPlannerData()">
-                <div class="icon-box">📤</div>
-                <div class="text-group">
-                    <span class="label">Export Current Plan</span>
-                    <span class="sub">Save backup of schedule & edits</span>
-                </div>
-            </button>
-
-        </div>
-
-        <div class="text-center border-top mt-5" style="padding-top: 15px;">
-             <p class="text-dim font-0-8rem mb-0" style="font-family: 'Nova Flat', sans-serif;">
-                This creates a separate backup file just for the planner tab.
-            </p>
-        </div>
-
-    </div>
-</div>
-
-<div id="linkModalOverlay" onclick="closeLinkModal(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
-        <div class="rank-card-modal" style="width: 400px;">
+    <!-- DAY PLAN EDIT MODAL -->
+    <div id="editModalOverlay" class="modal-backdrop" onclick="closeEditModal(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
+        <div class="modal-card">
             <div class="flex-between mb-20">
-                <h2 class="text-white" style="margin:0;">Add Hyperlink</h2>
-                <button class="btn-mini btn-close-accent" onclick="closeLinkModal(null)" style="border:none; font-size:1.5rem;">×</button>
+                <h2 class="text-white mb-0">Edit Day Plan</h2>
+                <button class="btn-mini btn-close-accent border-none font-1-5rem" onclick="closeEditModal(null)">×</button>
+            </div>
+
+            <input type="hidden" id="editDayId">
+            <input type="hidden" id="editSubjectValue">
+
+            <label class="text-default mb-10 block">Select Subject:</label>
+            <div class="pill-toolbar flex-start flex-gap-8 mb-20">
+                <button class="pill-btn" data-type="P" onclick="setEditSubject('P', this)">Physics</button>
+                <button class="pill-btn" data-type="C" onclick="setEditSubject('C', this)">Chemistry</button>
+                <button class="pill-btn" data-type="B" onclick="setEditSubject('B', this)">Biology</button>
+                <button class="pill-btn" data-type="O" onclick="setEditSubject('O', this)">Day Off</button>
+            </div>
+
+            <label class="text-default mb-10 block">Topic / Note:</label>
+            <input type="text" id="editTopicInput" class="exam-input text-left" placeholder="Enter topic name..." oninput="this.placeholder='Enter topic name...'">
+
+            <div class="flex-row flex-gap-10">
+                <button class="btn-large btn-start btn-reset-danger" onclick="clearEditTask()">Reset to Default</button>
+                <button class="btn-large btn-focus" onclick="saveEditTask()">SAVE CHANGE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PLANNER BACKUP MODAL -->
+    <div id="plannerMenuOverlay" class="modal-backdrop" onclick="closePlannerMenu(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
+        <div class="modal-card w-400">
+            
+            <div class="flex-between mb-25">
+                <h2 class="text-white mb-0">Planner Options</h2>
+                <button class="btn-mini btn-close-accent border-none font-1-5rem" onclick="closePlannerMenu(null)">×</button>
+            </div>
+            
+            <input type="file" id="planUploader" accept=".js,.json,.txt" class="hidden" onchange="handlePlanUpload(this)">
+            
+            <div class="modal-actions-grid">
+                <button class="modal-action-btn" onclick="document.getElementById('planUploader').click()">
+                    <div class="icon-box">📥</div>
+                    <div class="text-group">
+                        <span class="label">Import Plan</span>
+                        <span class="sub">Load a .json or .js schedule file</span>
+                    </div>
+                </button>
+                
+                <button class="modal-action-btn" onclick="exportPlannerData()">
+                    <div class="icon-box">📤</div>
+                    <div class="text-group">
+                        <span class="label">Export Current Plan</span>
+                        <span class="sub">Save backup of schedule & edits</span>
+                    </div>
+                </button>
+            </div>
+
+            <div class="text-center border-top pt-15 mt-5">
+                <p class="text-dim font-0-8rem mb-0">
+                    This creates a separate backup file just for the planner tab.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- HYPERLINK MODAL -->
+    <div id="linkModalOverlay" class="modal-backdrop" onclick="closeLinkModal(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
+        <div class="modal-card w-400">
+            <div class="flex-between mb-20">
+                <h2 class="text-white mb-0">Add Hyperlink</h2>
+                <button class="btn-mini btn-close-accent border-none font-1-5rem" onclick="closeLinkModal(null)">×</button>
             </div>
             
             <label class="text-default mb-10 block">Enter URL:</label>
             <input type="url" id="modalLinkUrl" class="exam-input" placeholder="enter the URL here"
-                   oninput="this.style.borderColor=''" 
-                   onfocus="this.style.borderColor=''">
+                   oninput="this.classList.remove('input-error');" 
+                   onfocus="this.classList.remove('input-error');">
 
             <button class="btn-large btn-focus exam-start-btn" onclick="confirmAddLink()">ADD LINK</button>
         </div>
     </div>
 
-     <!-- EXAM MODE OVERLAY -->
+    <!-- THEME CHANGE MODAL -->
+    <div id="settingsModalOverlay" class="modal-backdrop" onclick="closeSettingsModal(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
+        <div class="modal-card" style="max-width:420px;">
+            <div class="flex-between mb-20">
+                <h2 class="text-white mb-0">Appearance</h2>
+                <button class="btn-mini btn-close-accent border-none font-1-5rem" onclick="closeSettingsModal(null)">×</button>
+            </div>
+
+            <p class="text-default mb-15">Choose a visual theme for the app. Your selection will be saved.</p>
+
+            <div class="flex-row flex-gap-10 mb-5">
+                <button id="themeDarkBtn" class="pill-btn" onclick="setTheme('dark')">Dark Mode</button>
+                <button id="themeDarkestBtn" class="pill-btn" onclick="setTheme('darkest')">Darkest Mode</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXAM MODE OVERLAY -->
     <div id="examModeOverlay">
         <div class="clock-wrapper" id="clock">
             <div class="clock-hand hand-hour" id="hour-hand"></div>
