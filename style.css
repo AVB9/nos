@@ -2417,12 +2417,10 @@ div.editor-container .ce-block__content .tc-toolbox__toggler,
 div.editor-container .ce-block__content .tc-add-column,
 div.editor-container .ce-block__content .tc-add-row,
 div.editor-container .ce-block__content .neet-add-both-btn,
-div.editor-container .ce-block__content .neet-image-resize-handle,
 div.editor-container .ce-block__content .tc-toolbox__toggler *,
 div.editor-container .ce-block__content .tc-add-column *,
 div.editor-container .ce-block__content .tc-add-row *,
-div.editor-container .ce-block__content .neet-add-both-btn *,
-div.editor-container .ce-block__content .neet-image-resize-handle * {
+div.editor-container .ce-block__content .neet-add-both-btn * {
     cursor: pointer !important; -webkit-user-select: none !important; user-select: none !important;
 }
 

@@ -17,7 +17,6 @@ class ResizableImage extends window.ImageTool {
         handle.className = 'neet-image-resize-handle';
         handle.innerHTML = '⤡'; 
         handle.title = 'Drag to resize';
-        handle.style.cursor = 'nwse-resize';
 
         let startX, startWidth;
 
@@ -36,14 +35,16 @@ class ResizableImage extends window.ImageTool {
         const onMouseUp = () => {
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
-            document.body.style.cursor = 'default';
-            document.body.classList.remove('is-resizing'); // Removes the global override
+            document.body.style.cursor = '';
+            document.body.classList.remove('is-resizing'); 
         };
 
         handle.addEventListener('mousedown', (e) => {
             e.preventDefault();
             startX = e.clientX;
             startWidth = wrapper.offsetWidth;
+            
+            document.body.classList.add('is-resizing'); 
             document.body.style.cursor = 'nwse-resize';
             
             document.addEventListener('mousemove', onMouseMove);
