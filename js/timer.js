@@ -1,5 +1,5 @@
 /* =========================================
-   SECTION 3: TIMER LOGIC & AMBIENT SOUND
+   TIMER LOGIC & AMBIENT SOUND
    ========================================= */
 let timerInterval;
 let seconds = 0;
@@ -16,14 +16,14 @@ function selectSubject(subject, btn) {
     document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     
-    // Update Ring Color based on subject
+    // Update Ring Color based on subject (Now using CSS Tokens)
     const ring = document.getElementById('timerProgress');
     if(ring) {
-        if(subject === 'Physics') ring.style.stroke = '#4a90e2';
-        else if(subject === 'Chemistry') ring.style.stroke = '#f5a623';
-        else if(subject === 'Biology') ring.style.stroke = '#7ed321';
-        else if(subject === 'Other') ring.style.stroke = '#666'; 
-        else ring.style.stroke = '#ff3b3b';
+        if(subject === 'Physics') ring.style.stroke = 'var(--color-physics)';
+        else if(subject === 'Chemistry') ring.style.stroke = 'var(--color-chemistry)';
+        else if(subject === 'Biology') ring.style.stroke = 'var(--color-biology)';
+        else if(subject === 'Other') ring.style.stroke = 'var(--color-grey)'; 
+        else ring.style.stroke = 'var(--color-primary)';
     }
 }
 
@@ -41,8 +41,11 @@ function startTimer(focusMode = false, isResuming = false) {
     isFocusMode = focusMode;
     
     if (isResuming) {
-        const state = JSON.parse(localStorage.getItem('neetTimerState'));
+        const state = OS.Storage.get('neetTimerState', {});
+        if (!state.start) return; // Safety fallback
+        
         startTime = new Date(state.start);
+        
         // Restore inputs
         const subj = state.subject || 'Physics';
         const topic = state.topic || '';
@@ -55,13 +58,13 @@ function startTimer(focusMode = false, isResuming = false) {
         if(activeBtn) activeBtn.classList.add('active');
         
         // Ring Color
-         const ring = document.getElementById('timerProgress');
+        const ring = document.getElementById('timerProgress');
         if(ring) {
-            if(subj === 'Physics') ring.style.stroke = '#4a90e2';
-            else if(subj === 'Chemistry') ring.style.stroke = '#f5a623';
-            else if(subj === 'Biology') ring.style.stroke = '#7ed321';
-            else if(subj === 'Other') ring.style.stroke = '#666'; 
-            else ring.style.stroke = '#ff3b3b';
+            if(subj === 'Physics') ring.style.stroke = 'var(--color-physics)';
+            else if(subj === 'Chemistry') ring.style.stroke = 'var(--color-chemistry)';
+            else if(subj === 'Biology') ring.style.stroke = 'var(--color-biology)';
+            else if(subj === 'Other') ring.style.stroke = 'var(--color-grey)'; 
+            else ring.style.stroke = 'var(--color-primary)';
         }
 
         // Restore Exam details
@@ -70,19 +73,19 @@ function startTimer(focusMode = false, isResuming = false) {
 
     } else {
         startTime = new Date();
-        // Save State
+        // Save State via Kernel
         const state = {
             start: startTime.getTime(),
             focus: isFocusMode,
             subject: document.getElementById('selectedSubject').value,
             topic: document.getElementById('topicInput').value,
-            examType: examSessionType, // Save globals
+            examType: examSessionType, 
             examNo: examSessionNo
         };
-        localStorage.setItem('neetTimerState', JSON.stringify(state));
+        OS.Storage.set('neetTimerState', state);
     }
     
-    // UI updates (hide start, show stop)
+    // UI updates
     document.getElementById('startBtn').style.display = 'none'; 
     document.getElementById('startFocusBtn').style.display = 'none';
     document.getElementById('stopBtn').style.display = 'block';
@@ -94,18 +97,16 @@ function startTimer(focusMode = false, isResuming = false) {
 
     // Trigger Expand Animation
     document.querySelector('.circular-timer-wrapper').classList.add('active');
-    
-    // Trigger UI State Change on Parent
     document.querySelector('.timer-main-panel').classList.add('timer-running');
     
     // Disable inputs
-    document.querySelectorAll('#section-timer .pill-btn').forEach(b => b.style.pointerEvents = 'auto');
+    document.querySelectorAll('#section-timer .pill-btn').forEach(b => b.style.pointerEvents = 'none');
     
     // Check Topic Input & Default to "Self Study"
     const topicInput = document.getElementById('topicInput');
     if (topicInput) {
         if (!topicInput.value.trim()) {
-            topicInput.value = "Self Study"; // Auto-fill
+            topicInput.value = "Self Study"; 
         }
         topicInput.disabled = true;
     }
@@ -119,49 +120,40 @@ function startTimer(focusMode = false, isResuming = false) {
         }
     }
     
-     timerInterval = setInterval(() => {
+    timerInterval = setInterval(() => {
         const now = new Date();
-        seconds = Math.floor((now - startTime) / 1000); // Robust calculation
+        seconds = Math.floor((now - startTime) / 1000); 
         
         document.getElementById('timerDisplay').innerText = formatTime(seconds);
         document.title = `(${formatTime(seconds)}) Studying...`;
         
-        // Update Circular Ring (60s loop) - SMOOTH FADE LOGIC
+        // Update Circular Ring
         const ring = document.getElementById('timerProgress');
         if (ring) {
-            const circumference = 855; // 2*PI*136
+            const circumference = 855; 
             const currentSec = seconds % 60;
             
             if (currentSec === 0) {
-                // 1. Finish the circle visually (Full)
                 ring.style.transition = 'stroke-dashoffset 1s linear, opacity 0.5s ease';
                 ring.style.strokeDashoffset = '0';
                 ring.style.opacity = '1';
                 
-                // 2. Fade out near the end of the second
-                setTimeout(() => {
-                    ring.style.opacity = '0';
-                }, 750); 
-
-                // 3. Reset instantly while invisible (at 950ms)
+                setTimeout(() => { ring.style.opacity = '0'; }, 750); 
                 setTimeout(() => {
                     ring.style.transition = 'none';
                     ring.style.strokeDashoffset = circumference;
                 }, 950); 
             } else {
-                // 4. Regular tick: Ensure opacity is 1 (Fades back in if it was 0)
                 ring.style.transition = 'stroke-dashoffset 1s linear, opacity 0.5s ease';
                 ring.style.opacity = '1';
-                
                 const offset = circumference - (currentSec / 60) * circumference;
                 ring.style.strokeDashoffset = offset;
             }
         }
-        
     }, 1000);
 }
 
-// Direct Focus Session (No Modal)
+// Direct Focus Session
 function startFocusSession() {
     examSessionType = '';
     examSessionNo = '';
@@ -183,17 +175,15 @@ function stopTimer() {
     isRunning = false;
     const endTime = new Date();
     
-    // Clear Timer State
-    localStorage.removeItem('neetTimerState');
+    // Clear Timer State via Kernel
+    OS.Storage.remove('neetTimerState');
 
     // Hide Live Indicator
     const liveDot = document.getElementById('liveStreakDot');
     if(liveDot) liveDot.style.display = 'none';
 
-    // Collapse Animation (Revert)
+    // Collapse Animation
     document.querySelector('.circular-timer-wrapper').classList.remove('active');
-    
-    // Revert UI State
     document.querySelector('.timer-main-panel').classList.remove('timer-running');
     
     let subject = 'Self Study';
@@ -310,9 +300,9 @@ function stopAmbientSound() {
 
 function saveTimerLog(subject, topic, start, end, duration) {
     const log = { id: Date.now(), subject: subject, topic: topic, startTime: start.toISOString(), endTime: end.toISOString(), duration: duration };
-    const logs = JSON.parse(localStorage.getItem('studyLogs')) || [];
+    const logs = OS.Storage.get('studyLogs', []);
     logs.unshift(log); 
-    localStorage.setItem('studyLogs', JSON.stringify(logs));
+    OS.Storage.set('studyLogs', logs);
     renderTimerLogs();
 }
 
@@ -322,7 +312,7 @@ function handleSubjectChange() {
 }
 
 function renderTimerLogs() {
-    const logs = JSON.parse(localStorage.getItem('studyLogs')) || [];
+    const logs = OS.Storage.get('studyLogs', []);
     const container = document.getElementById('logContainer');
     if (container) {
         container.innerHTML = '';
@@ -346,7 +336,7 @@ function renderTimerLogs() {
         if(dayTotal) dayTotal.innerText = `Total: ${h}h ${m}m`;
 
         if(dayLogs.length === 0) {
-            container.innerHTML = '<div style="text-align:center; color:#555; padding:20px;">No sessions recorded for this date.</div>';
+            container.innerHTML = '<div style="text-align:center; color:var(--color-text-muted); padding:20px;">No sessions recorded for this date.</div>';
         } else {
             dayLogs.forEach(log => {
                 const row = document.createElement('div');
@@ -364,11 +354,11 @@ function renderTimerLogs() {
 
                 row.innerHTML = `
                     <div style="display:flex; flex-direction:column;">
-                        <span style="color:#888; font-size:0.8rem;">${timeStr}</span>
-                        <div><span class="badge ${badgeClass}">${log.subject}</span> <span style="color:#ccc;">${log.topic}</span></div>
+                        <span style="color:var(--color-text-muted); font-size:0.8rem;">${timeStr}</span>
+                        <div><span class="badge ${badgeClass}">${log.subject}</span> <span style="color:var(--color-text-default);">${log.topic}</span></div>
                     </div>
                     <div style="display:flex; align-items:center;">
-                        <span style="color:#ff3b3b; font-weight:bold; margin-right:10px;">${durStr}</span>
+                        <span style="color:var(--color-primary); font-weight:bold; margin-right:10px;">${durStr}</span>
                         <button class="delete-btn" onclick="deleteTimerLog(${log.id})" title="Delete Entry">×</button>
                     </div>
                 `;
@@ -376,13 +366,13 @@ function renderTimerLogs() {
             });
         }
     }
-    // Try to update dashboard if the function is available in global scope
+    
     if(typeof updateDashboard === 'function') updateDashboard();
 }
 
 function deleteTimerLog(id) {
-    let logs = JSON.parse(localStorage.getItem('studyLogs')) || [];
+    let logs = OS.Storage.get('studyLogs', []);
     logs = logs.filter(l => l.id !== id);
-    localStorage.setItem('studyLogs', JSON.stringify(logs));
+    OS.Storage.set('studyLogs', logs);
     renderTimerLogs();
 }

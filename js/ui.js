@@ -139,7 +139,7 @@
             }
 
             if (hasSelection) items.push(`<div class="ctx-btn" data-cmd="todo">📌 Extract to To-Do</div>`);
-            items.push(`<div class="ctx-btn" data-cmd="clear" style="color:#ff3b3b;">🗑️ Clear</div>`);
+            items.push('<div class="ctx-btn" data-cmd="clear" style="color:var(--color-primary);">🗑️ Clear</div>');
         }
 
         menu.innerHTML = items.join('<div style="height:1px; background:var(--color-border); margin:4px 0;"></div>');
