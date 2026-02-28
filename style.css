@@ -25,12 +25,15 @@
             --color-purple: #9013fe;
             --color-grey: #666;
 
+
             --color-bg-editor-popover: #1a1a1a; 
             --color-bg-editor-hover: #2a2a2a;
             --color-bg-editor-input: #111111;
             --color-bg-editor-code: #181818;
             --color-border-editor: #333333;
             --color-text-editor-h2: #e0e0e0;
+            --color-highlight: #03DAC6;
+            --color-highlight-bg: rgba(2, 180, 162, 0.15);
             
             --z-background: 0;
             --z-content: 10;
@@ -119,10 +122,11 @@
             user-select: none;
         }
 
-        /* Allow text selection in inputs and textareas */
+        /* Allow text selection in inputs, textareas, and ALL elements inside contenteditable */
         input:not([type="date"]),
         textarea,
-        [contenteditable] {
+        [contenteditable],
+        [contenteditable] * {
             -webkit-user-select: text;
             -moz-user-select: text;
             -ms-user-select: text;
@@ -2395,39 +2399,17 @@
    1. CANVAS BASE & THEME
    ================================================================= */
 .os-sidebar.collapsed ~ main #section-canvas { max-width: 100% !important; transition: max-width 0.4s ease; }
-
-.editor-container {
-    width: 100%; background: var(--color-bg-dark); border: 1px solid var(--color-border);
-    border-radius: 15px; padding: 40px; min-height: 70vh;    
-    font-family: 'Nova Flat', sans-serif !important; color: var(--color-text-bright);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-
-.codex-editor { 
-    --color-background-popover: transparent !important;
-    --color-border-popover: transparent !important;
-}
-
+.editor-container { width: 100%; background: var(--color-bg-dark); border: 1px solid var(--color-border); border-radius: 15px; padding: 40px; min-height: 70vh; font-family: 'Nova Flat', sans-serif !important; color: var(--color-text-bright); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+.codex-editor { --color-background-popover: transparent !important; --color-border-popover: transparent !important; }
 .ce-block__content, .ce-toolbar__content { max-width: 100% !important; }
 
 /* =================================================================
    2. TEXT SELECTION & DYNAMIC LINKS
    ================================================================= */
-div.editor-container .ce-block__content .tc-toolbox__toggler,
-div.editor-container .ce-block__content .tc-add-column,
-div.editor-container .ce-block__content .tc-add-row,
-div.editor-container .ce-block__content .neet-add-both-btn,
-div.editor-container .ce-block__content .tc-toolbox__toggler *,
-div.editor-container .ce-block__content .tc-add-column *,
-div.editor-container .ce-block__content .tc-add-row *,
-div.editor-container .ce-block__content .neet-add-both-btn * {
-    cursor: pointer !important; -webkit-user-select: none !important; user-select: none !important;
-}
-
+div.editor-container .ce-block__content .tc-toolbox__toggler, div.editor-container .ce-block__content .tc-add-column, div.editor-container .ce-block__content .tc-add-row, div.editor-container .ce-block__content .neet-add-both-btn, div.editor-container .ce-block__content .tc-toolbox__toggler *, div.editor-container .ce-block__content .tc-add-column *, div.editor-container .ce-block__content .tc-add-row *, div.editor-container .ce-block__content .neet-add-both-btn * { cursor: pointer !important; -webkit-user-select: none !important; user-select: none !important; }
 ::selection { background-color: rgba(255, 59, 59, 0.4) !important; color: inherit !important; }
 ::-moz-selection { background-color: rgba(255, 59, 59, 0.4) !important; color: inherit !important; }
 .ce-block--selected .ce-block__content { background: rgba(255, 59, 59, 0.15) !important; border-radius: 4px; }
-
 #editor-phy a, #editor-chem a, #editor-bio a { text-decoration: underline; transition: color 0.2s ease; cursor: pointer !important; }
 #editor-phy a { color: var(--color-physics) !important; }
 #editor-chem a { color: var(--color-chemistry) !important; }
@@ -2437,176 +2419,91 @@ div.editor-container .ce-block__content .neet-add-both-btn * {
 /* =================================================================
    3. MINIMALIST MENUS, TOOLBARS & SEARCH
    ================================================================= */
-.ce-popover, .ce-popover__container, .ce-inline-toolbar, .ce-conversion-toolbar, .tc-popover { 
-    background-color: var(--color-bg-editor-popover) !important; 
-    border: 1px solid var(--color-border-editor) !important; 
-    box-shadow: 0 8px 24px rgba(0,0,0,0.8) !important; border-radius: 6px !important; padding: 2px !important;
-}
-
+.ce-popover, .ce-popover__container, .ce-inline-toolbar, .ce-conversion-toolbar, .tc-popover { background-color: var(--color-bg-editor-popover) !important; border: 1px solid var(--color-border-editor) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.8) !important; border-radius: 6px !important; padding: 2px !important; }
 .ce-popover-item, .ce-inline-tool, .ce-conversion-tool { color: var(--color-text-dim) !important; transition: all 0.2s ease !important; border-radius: 4px !important; }
 .ce-popover-item:hover, .ce-inline-tool:hover, .ce-conversion-tool:hover { background-color: var(--color-bg-editor-hover) !important; color: var(--color-primary) !important; }
 .ce-popover-item__icon, .ce-inline-tool, .ce-conversion-tool__icon { background: transparent !important; border: none !important; box-shadow: none !important; }
-
-.ce-popover__search-input, .ce-inline-tool-input, .cdx-search-field {
-    cursor: text !important; -webkit-user-select: text !important; user-select: text !important;
-    background-color: var(--color-bg-editor-input) !important; color: var(--color-text-bright) !important; 
-    border: 1px solid var(--color-border-editor) !important; border-radius: 4px !important;
-}
+.ce-popover__search-input, .ce-inline-tool-input, .cdx-search-field { cursor: text !important; -webkit-user-select: text !important; user-select: text !important; background-color: var(--color-bg-editor-input) !important; color: var(--color-text-bright) !important; border: 1px solid var(--color-border-editor) !important; border-radius: 4px !important; }
 .ce-popover__search-input:focus, .cdx-search-field:focus, .ce-inline-tool-input:focus { border-color: var(--color-primary) !important; }
 
 /* =================================================================
    4. GHOST LEFT-MARGIN CONTROLS (+ and ::)
    ================================================================= */
-.ce-toolbar__plus, .ce-toolbar__settings-btn { 
-    background-color: var(--color-border-light) !important; color: var(--color-text-bright) !important; 
-    border: none !important; box-shadow: none !important; opacity: 0.3 !important; transition: all 0.2s ease !important;
-}
+.ce-toolbar__plus, .ce-toolbar__settings-btn { background-color: var(--color-border-light) !important; color: var(--color-text-bright) !important; border: none !important; box-shadow: none !important; opacity: 0.3 !important; transition: all 0.2s ease !important; }
 .ce-block:hover .ce-toolbar__plus, .ce-block:hover .ce-toolbar__settings-btn, .ce-toolbar__plus--active { opacity: 0.7 !important; }
-.ce-toolbar__plus:hover, .ce-toolbar__settings-btn:hover { 
-    opacity: 1 !important; color: var(--color-primary) !important; background-color: rgba(255, 59, 59, 0.1) !important; border-radius: 4px !important;
-}
+.ce-toolbar__plus:hover, .ce-toolbar__settings-btn:hover { opacity: 1 !important; color: var(--color-primary) !important; background-color: rgba(255, 59, 59, 0.1) !important; border-radius: 4px !important; }
 .ce-toolbar__plus svg, .ce-toolbar__settings-btn svg { fill: currentColor !important; }
 
 /* =================================================================
-   5. TYPOGRAPHY & LISTS
+   5. TYPOGRAPHY, LISTS & INLINE STYLES
    ================================================================= */
 h1.ce-header { font-size: 2.2rem; color: var(--color-text-bright); border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 8px; margin-bottom: 15px; }
 h2.ce-header { font-size: 1.6rem; color: var(--color-text-editor-h2); margin-bottom: 12px; }
 h3.ce-header { font-size: 1.2rem; color: var(--color-primary); text-transform: uppercase; letter-spacing: 1px; }
-
-.ce-code__textarea, .cdx-inline-code { 
-    background-color: var(--color-bg-editor-code) !important; color: var(--color-biology) !important; 
-    border: 1px solid rgba(255, 255, 255, 0.05) !important; font-family: monospace !important; border-radius: 4px; padding: 15px; 
-}
-.cdx-inline-code { padding: 2px 6px; color: var(--color-primary) !important; background-color: rgba(255,59,59,0.1) !important; border: none !important; }
-
-/* Unordered Lists */
+.ce-code__textarea { background-color: var(--color-bg-editor-code) !important; color: var(--color-biology) !important; border: 1px solid var(--color-border-editor) !important; font-family: monospace !important; border-radius: 6px; padding: 15px; }
+div.editor-container code.inline-code, .inline-code, .cdx-inline-code { padding: 2px 6px !important; color: var(--color-text-bright) !important; background-color: var(--color-bg-medium) !important; border: 1px solid var(--color-border) !important; border-radius: 4px !important; font-family: monospace !important; font-size: 0.9em !important; font-weight: normal !important; letter-spacing: normal !important; }
+div.editor-container mark.cdx-marker, div.editor-container mark, .cdx-marker { background-color: var(--color-highlight-bg, rgba(255, 215, 0, 0.15)) !important; color: var(--color-highlight, #ffd700) !important; padding: 2px 4px !important; border-radius: 4px !important; font-weight: inherit !important; }
 .cdx-list--unordered, .cdx-list-unordered { list-style: none !important; padding-left: 20px !important; }
 .cdx-list--unordered .cdx-list__item, .cdx-list-unordered .cdx-list__item { position: relative !important; }
 .cdx-list--unordered .cdx-list__item::marker, .cdx-list-unordered .cdx-list__item::marker { content: "" !important; display: none !important; }
 .cdx-list--unordered .cdx-list__item::after, .cdx-list-unordered .cdx-list__item::after { display: none !important; }
-.cdx-list--unordered .cdx-list__item::before, .cdx-list-unordered .cdx-list__item::before { 
-    content: "–" !important; position: absolute !important; left: -20px !important; top: 0 !important;
-    color: var(--color-primary) !important; font-weight: bold !important; background: transparent !important; border: none !important; width: auto !important; height: auto !important;
-}
+.cdx-list--unordered .cdx-list__item::before, .cdx-list-unordered .cdx-list__item::before { content: "–" !important; position: absolute !important; left: -20px !important; top: 0 !important; color: var(--color-primary) !important; font-weight: bold !important; background: transparent !important; border: none !important; width: auto !important; height: auto !important; }
 
 /* =================================================================
-   6. CUSTOM CHECKLIST (list.js overrides)
+   6. CUSTOM CHECKLIST
    ================================================================= */
 .cdx-list__checkbox svg { display: none !important; }
 .editor-container .ce-block__content .cdx-list__checkbox, .editor-container .ce-block__content .cdx-list__checkbox * { cursor: pointer !important; user-select: none !important; }
-
-.cdx-list__checkbox-check {
-    background: var(--color-bg-darkest) !important; border: 2px solid var(--color-border-light) !important;
-    border-radius: 4px !important; width: 18px !important; height: 18px !important;
-    position: relative !important; box-sizing: border-box !important; transition: all 0.2s ease !important;
-}
+.cdx-list__checkbox-check { background: var(--color-bg-darkest) !important; border: 2px solid var(--color-border-light) !important; border-radius: 4px !important; width: 18px !important; height: 18px !important; position: relative !important; box-sizing: border-box !important; transition: all 0.2s ease !important; }
 .cdx-list__checkbox:hover .cdx-list__checkbox-check { border-color: var(--color-primary) !important; }
 .cdx-list__checkbox--checked .cdx-list__checkbox-check { background: var(--color-primary) !important; border-color: var(--color-primary) !important; }
-.cdx-list__checkbox--checked .cdx-list__checkbox-check::after {
-    content: '' !important; position: absolute !important; top: 1px !important; left: 4px !important;
-    width: 4px !important; height: 8px !important; border: solid var(--color-black) !important; border-width: 0 2px 2px 0 !important; transform: rotate(45deg) !important;
-}
-
+.cdx-list__checkbox--checked .cdx-list__checkbox-check::after { content: '' !important; position: absolute !important; top: 1px !important; left: 4px !important; width: 4px !important; height: 8px !important; border: solid var(--color-black) !important; border-width: 0 2px 2px 0 !important; transform: rotate(45deg) !important; }
 .cdx-list__checkbox-check::before { display: none !important; content: none !important; animation: none !important; }
 .cdx-list__item-content { color: var(--color-text-bright) !important; transition: color 0.2s ease !important; }
 .cdx-list__item:has(.cdx-list__checkbox--checked) > .cdx-list__item-content { color: var(--color-text-dim) !important; text-decoration: line-through !important; }
 
 /* =================================================================
-   7. PURE CUSTOM TABLE (NOTION-STYLE)
+   7. CUSTOM TABLE
    ================================================================= */
 .tc-table { border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 8px !important; overflow: hidden !important; background-color: var(--color-bg-darkest) !important; }
-.tc-cell { 
-    border: 1px solid var(--color-border-light) !important; color: var(--color-text-bright) !important; 
-    padding: 12px 16px !important; background-color: transparent !important; text-align: center !important; vertical-align: middle !important; 
-}
+.tc-cell { border: 1px solid var(--color-border-light) !important; color: var(--color-text-bright) !important; padding: 12px 16px !important; background-color: transparent !important; text-align: center !important; vertical-align: middle !important; }
 .tc-row:first-child .tc-cell { border-top: none !important; }
 .tc-row:last-child .tc-cell { border-bottom: none !important; }
 .tc-row .tc-cell:first-child { border-left: none !important; }
 .tc-row .tc-cell:last-child { border-right: none !important; }
-
-.tc-wrap .tc-table .tc-row:first-child .tc-cell, .tc-row--heading .tc-cell {
-    background-color: rgba(255, 59, 59, 0.05) !important; color: var(--color-primary) !important;
-    font-weight: bold !important; border-bottom: 1px solid var(--color-primary) !important;
-}
+.tc-wrap .tc-table .tc-row:first-child .tc-cell, .tc-row--heading .tc-cell { background-color: rgba(255, 59, 59, 0.05) !important; color: var(--color-primary) !important; font-weight: bold !important; border-bottom: 1px solid var(--color-primary) !important; }
 .tc-row:hover { background-color: rgba(255, 255, 255, 0.02); }
 .tc-cell--selected, .tc-row--selected { background-color: rgba(255, 59, 59, 0.2) !important; }
-
 .tc-toolbox__toggler svg, .tc-add-column svg, .tc-add-row svg { display: none !important; }
 .tc-toolbox__toggler::before, .tc-add-column::before, .tc-add-row::before { background: transparent !important; border: none !important; }
 .tc-toolbox { background: transparent !important; border: none !important; box-shadow: none !important; }
-
-.tc-toolbox__toggler, .tc-add-column, .tc-add-row { 
-    background-color: transparent !important; border: 1px solid transparent !important; border-radius: 6px !important; 
-    display: flex !important; align-items: center !important; justify-content: center !important; opacity: 0 !important; transition: all 0.2s ease !important; position: relative !important;
-}
+.tc-toolbox__toggler, .tc-add-column, .tc-add-row { background-color: transparent !important; border: 1px solid transparent !important; border-radius: 6px !important; display: flex !important; align-items: center !important; justify-content: center !important; opacity: 0 !important; transition: all 0.2s ease !important; position: relative !important; }
 .tc-wrap:hover .tc-toolbox__toggler, .tc-wrap:hover .tc-add-column, .tc-wrap:hover .tc-add-row { opacity: 0.3 !important; }
 .tc-toolbox__toggler::after, .tc-add-column::after, .tc-add-row::after { content: '+'; font-size: 20px; font-weight: bold; color: var(--color-text-dim); font-family: 'Nova Flat', sans-serif; position: absolute; }
 .tc-toolbox__toggler:hover, .tc-add-column:hover, .tc-add-row:hover { opacity: 1 !important; background-color: var(--color-bg-medium) !important; border-color: var(--color-border) !important; }
 .tc-toolbox__toggler:hover::after, .tc-add-column:hover::after, .tc-add-row:hover::after { color: var(--color-primary) !important; }
-
 .tc-wrap { position: relative !important; }
-.neet-add-both-btn {
-    position: absolute; bottom: 0.1rem; right: 0.1rem; width: 29px; height: 29px;
-    background-color: transparent; border: 1px solid transparent; border-radius: 6px;
-    color: var(--color-text-dim); display: flex; align-items: center; justify-content: center;
-    cursor: pointer; z-index: 50; opacity: 0; font-size: 16px; transition: all 0.2s ease;
-    -webkit-user-select: none !important; user-select: none !important;
-}
+.neet-add-both-btn { position: absolute; bottom: 0.1rem; right: 0.1rem; width: 29px; height: 29px; background-color: transparent; border: 1px solid transparent; border-radius: 6px; color: var(--color-text-dim); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; opacity: 0; font-size: 16px; transition: all 0.2s ease; -webkit-user-select: none !important; user-select: none !important; }
 .tc-wrap:hover .neet-add-both-btn { opacity: 0.5; }
 .neet-add-both-btn:hover { opacity: 1 !important; color: var(--color-primary) !important; transform: scale(1.1); border-color: var(--color-text-dim); }
 
 /* =================================================================
    8. IMAGE RESIZING & CAPTIONS
    ================================================================= */
-.image-tool { position: relative !important; transition: none !important; }
-.image-tool__image { background: transparent !important; padding: 0 !important; }
-.image-tool__image-picture { width: 100% !important; height: auto !important; display: block !important; border-radius: 6px !important; border: 1px solid var(--color-border) !important; }
-
-.neet-image-resize-handle {
-    position: absolute; bottom: 5px; right: -30px; width: 24px; height: 24px;
-    color: var(--color-text-dim); cursor: nwse-resize; display: flex; align-items: center; justify-content: center;
-    font-size: 16px; font-weight: bold; opacity: 0; transition: opacity 0.2s ease, color 0.2s ease; z-index: 50;
-}
+.image-tool { position: relative !important; transition: none !important; margin-bottom: 0 !important; padding-bottom: 0 !important; }
+.image-tool__image { background: transparent !important; padding: 0 !important; margin-bottom: 0 !important; position: relative !important; overflow: visible !important; }
+.image-tool__image-picture { width: 100% !important; height: auto !important; display: block !important; border-radius: 6px !important; border: 1px solid var(--color-border) !important; margin-bottom: 0 !important; }
+.neet-image-resize-handle { position: absolute; bottom: 5px; right: -30px; width: 24px; height: 24px; color: var(--color-text-dim); cursor: nwse-resize; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; opacity: 0; transition: opacity 0.2s ease, color 0.2s ease; z-index: 50; }
 .image-tool:hover .neet-image-resize-handle { opacity: 1; }
 .neet-image-resize-handle:hover { color: var(--color-primary); transform: scale(1.1); }
-
-.cdx-input.image-tool__caption {
-    border-radius: 6px !important; background-color: transparent !important; border: 1px solid transparent !important;
-    color: var(--color-text-bright) !important; padding: 10px 14px !important; box-shadow: none !important; text-align: center !important; transition: all 0.3s ease !important;
-}
+.cdx-input.image-tool__caption { border-radius: 6px !important; background-color: transparent !important; border: 1px solid transparent !important; color: var(--color-text-bright) !important; padding: 2px 10px !important; box-shadow: none !important; text-align: center !important; transition: all 0.3s ease !important; display: block !important; position: relative !important; margin-top: 4px !important; margin-bottom: 4px !important; min-height: 20px !important; line-height: 1.2 !important; }
 .cdx-input.image-tool__caption:focus { background-color: var(--color-bg-darkest) !important; border-color: var(--color-primary) !important; outline: none !important; }
-
 @media (max-width: 768px) { .image-tool { width: 100% !important; } }
 
 /* =================================================================
-   CANVAS UI FIXES (Overrides for Editor.js Native Styles)
+   9. CANVAS UI FIXES 
    ================================================================= */
-
-/* 1. Force the Image Resize Handle to always show the diagonal arrows */
-.neet-image-resize-handle, 
-.neet-image-resize-handle:hover {
-    cursor: nwse-resize !important;
-}
-
-/* 2. Restore the standard Text Cursor for all typing blocks */
-.ce-block__content, 
-.ce-paragraph, 
-.ce-header, 
-.cdx-list,
-.infinite-canvas [contenteditable="true"] {
-    cursor: text !important;
-}
-
-/* 3. Protect Checklist Checkboxes from the text cursor (Keep them as pointers) */
-.cdx-checklist__item-checkbox, 
-.cdx-checklist__item-checkbox:hover {
-    cursor: pointer !important;
-}
-
-/* 4. Force resize cursor globally while actively dragging */
-body.is-resizing, 
-body.is-resizing * {
-    cursor: nwse-resize !important;
-    user-select: none !important;
-}
+.neet-image-resize-handle, .neet-image-resize-handle:hover { cursor: nwse-resize !important; }
+.ce-block__content, .ce-paragraph, .ce-header, .cdx-list, .infinite-canvas [contenteditable="true"] { cursor: text !important; }
+.cdx-checklist__item-checkbox, .cdx-checklist__item-checkbox:hover { cursor: pointer !important; }
+body.is-resizing, body.is-resizing * { cursor: nwse-resize !important; user-select: none !important; }
