@@ -2440,9 +2440,14 @@ div.editor-container .ce-block__content .tc-toolbox__toggler, div.editor-contain
 h1.ce-header { font-size: 2.2rem; color: var(--color-text-bright); border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 8px; margin-bottom: 15px; }
 h2.ce-header { font-size: 1.6rem; color: var(--color-text-editor-h2); margin-bottom: 12px; }
 h3.ce-header { font-size: 1.2rem; color: var(--color-primary); text-transform: uppercase; letter-spacing: 1px; }
-.ce-code__textarea { background-color: var(--color-bg-editor-code) !important; color: var(--color-biology) !important; border: 1px solid var(--color-border-editor) !important; font-family: monospace !important; border-radius: 6px; padding: 15px; }
-div.editor-container code.inline-code, .inline-code, .cdx-inline-code { padding: 2px 6px !important; color: var(--color-biology) !important; background-color: var(--color-bg-editor-code) !important; border: 1px solid var(--color-border) !important; border-radius: 4px !important; font-family: monospace !important; font-size: 1em !important; font-weight: normal !important; letter-spacing: normal !important; }
-div.editor-container mark.cdx-marker, div.editor-container mark, .cdx-marker { background-color: var(--color-highlight-bg) !important; color: var(--color-highlight) !important; padding: 2px 4px !important; border-radius: 4px !important; font-weight: inherit !important; }
+
+.ce-code__textarea, .cdx-inline-code { 
+    background-color: var(--color-bg-editor-code) !important; color: var(--color-biology) !important; 
+    border: 1px solid rgba(255, 255, 255, 0.05) !important; font-family: monospace !important; border-radius: 4px; padding: 15px; 
+}
+.cdx-inline-code { padding: 2px 6px; color: var(--color-primary) !important; background-color: rgba(255,59,59,0.1) !important; border: none !important; }
+
+/* Unordered Lists */
 .cdx-list--unordered, .cdx-list-unordered { list-style: none !important; padding-left: 20px !important; }
 .cdx-list--unordered .cdx-list__item, .cdx-list-unordered .cdx-list__item { position: relative !important; }
 .cdx-list--unordered .cdx-list__item::marker, .cdx-list-unordered .cdx-list__item::marker { content: "" !important; display: none !important; }
