@@ -51,7 +51,19 @@ class ResizableImage extends window.ImageTool {
             document.addEventListener('mouseup', onMouseUp);
         });
 
+        // 1. Initial append to wrapper
         wrapper.appendChild(handle);
+
+        // 2. Aggressive Observer: Forces the handle into the image box immediately when Editor.js creates it
+        const observer = new MutationObserver(() => {
+            const imgBox = wrapper.querySelector('.image-tool__image');
+            if (imgBox && !imgBox.contains(handle)) {
+                imgBox.style.position = 'relative';
+                imgBox.appendChild(handle);
+            }
+        });
+        observer.observe(wrapper, { childList: true, subtree: true });
+
         return wrapper;
     }
 
