@@ -17,6 +17,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="NEET OS">
 
+    <!-- Boot -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sync.js"></script>
+
     <!-- Universal Favicons -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 100 100%22%3E%3Ccircle cx%3D%2250%22 cy%3D%2250%22 r%3D%2245%22 fill%3D%22%231e1e1e%22 stroke%3D%22%23ff3b3b%22 stroke-width%3D%225%22%2F%3E%3Cpath d%3D%22M50 20 L50 80 M20 50 L80 50%22 stroke%3D%22%23ff3b3b%22 stroke-width%3D%225%22%2F%3E%3Ccircle cx%3D%2250%22 cy%3D%2250%22 r%3D%2215%22 fill%3D%22%23ff3b3b%22%2F%3E%3C%2Fsvg%3E">
     <link rel="apple-touch-icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 100 100%22%3E%3Ccircle cx%3D%2250%22 cy%3D%2250%22 r%3D%2245%22 fill%3D%22%231e1e1e%22 stroke%3D%22%23ff3b3b%22 stroke-width%3D%225%22%2F%3E%3Cpath d%3D%22M50 20 L50 80 M20 50 L80 50%22 stroke%3D%22%23ff3b3b%22 stroke-width%3D%225%22%2F%3E%3Ccircle cx%3D%2250%22 cy%3D%2250%22 r%3D%2215%22 fill%3D%22%23ff3b3b%22%2F%3E%3C%2Fsvg%3E">
@@ -41,10 +46,9 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/mhchem.min.js"></script>
-    
 
     <!-- Editor.js Core & Plugins -->
-   <script src="js/canvas/editorjs.js"></script>
+    <script src="js/canvas/editorjs.js"></script>
     <script src="js/canvas/header.js"></script>
     <script src="js/canvas/list.js"></script>
     <script src="js/canvas/image.js"></script>
@@ -91,10 +95,8 @@
                 }
             }
 
-            // Attempt immediately on boot
             attemptThemeLoad();
             
-            // Aggressively knock on the door 20 times to bypass OS Cold Boot locks
             let retries = 0;
             let themeInterval = setInterval(() => {
                 attemptThemeLoad();
@@ -104,47 +106,109 @@
         })();
     </script>
 
-    <!-- SCRIPT 2: Clean, Instant Preloader Logic -->
-   
+    <!-- SCRIPT 2: Preloader Initialization -->
+
     <script>
         (function() {
-            // 1. Inject CSS instantly
+            // 1. Inject CSS instantly (Restored exactly to your original design)
             const style = document.createElement('style');
             style.innerHTML = `
                 #neet-preloader { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #000000; z-index: 999999; display: flex; justify-content: center; align-items: center; transition: background-color 0.8s ease-in-out, visibility 1.5s; }
-                #neet-preloader svg { width: 80px; height: 80px; color: var(--color-primary, #ff3b3b); transform: scale(1); opacity: 1; transition: transform 0.9s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.6s ease-in; }
+                
+                /* Your pristine original SVG setup - No Glow */
+                #neet-preloader svg { 
+                    width: 80px; height: 80px; 
+                    color: var(--color-primary, #ff3b3b); 
+                    transform: scale(1); 
+                    opacity: 1; 
+                    transition: transform 0.9s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.6s ease-in; 
+                }
+                
                 #neet-preloader.zoom-active { background-color: transparent; pointer-events: none; }
                 #neet-preloader.zoom-active svg { transform: scale(40); opacity: 0; }
                 #neet-preloader.hidden { visibility: hidden; display: none; }
             `;
             document.head.appendChild(style);
 
-            // 2. Execute Zoom Logic on Window Load
-            window.addEventListener('load', () => {
+            // 2. AuthManager pulls the trigger on the zoom
+            window.dismissNeetPreloader = function() {
                 const preloader = document.getElementById('neet-preloader');
                 if (!preloader) return;
                 
-                // Small delay to ensure a smooth transition
+                // Trigger the cinematic zoom
                 setTimeout(() => {
                     preloader.classList.add('zoom-active');
                     setTimeout(() => preloader.classList.add('hidden'), 1000);
-                }, 400); 
-            });
+                }, 100);
+            };
+
+            // 3. Reset for Logout
+            window.resetNeetPreloader = function() {
+                const preloader = document.getElementById('neet-preloader');
+                if (!preloader) return;
+                preloader.classList.remove('hidden', 'zoom-active');
+            };
         })();
-    </script>  
+    </script>
 </head>
 
 <body>
 
-        <!-- =================================================================
-         PRELOADER ANIMATION (Instant HTML to prevent flash)
-         ================================================================= -->
+     <!-- PRELOADER ANIMATION (Instant HTML to prevent flash) --> 
+
     <div id="neet-preloader">
         <svg viewBox="0 0 100 100">
             <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="6"/>
             <path d="M50 20 L50 80 M20 50 L80 50" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
             <circle cx="50" cy="50" r="15" fill="currentColor"/>
         </svg>
+    </div>
+
+    <div id="os-auth-gate" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--color-black); z-index: 999998; display: none; align-items: center; justify-content: center; flex-direction: column;">
+        
+        <div id="deck-couch" style="text-align: center; width: 100%; max-width: 400px;">
+            <h1 style="color: var(--color-primary); font-size: 3.5rem; margin-bottom: 10px; letter-spacing: 2px;">NEET OS</h1>
+            <p style="color: var(--color-text-dim); margin-bottom: 40px; font-size: 1.2rem;">Your dedicated offline study environment.</p>
+            <button onclick="switchAuthDeck('login')" class="btn-focus" style="width: 100%; font-size: 1.1rem; padding: 12px;">Enter / Login</button>
+        </div>
+
+        <div id="deck-login" class="os-card" style="display: none; width: 100%; max-width: 380px; text-align: center; padding: 40px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-bg-dark);">
+            <h2 style="color: var(--color-primary); margin-top: 0;">Reception</h2>
+            <p style="color: var(--color-text-dim); margin-bottom: 25px; font-size: 0.9rem;">Identify yourself to enter.</p>
+            
+            <input type="email" id="loginEmail" class="os-input" placeholder="Email Address" style="width:100%; margin-bottom:15px; padding:12px; background:var(--color-bg-editor-input); border:1px solid var(--color-border); color:var(--color-text-bright); border-radius:4px; box-sizing:border-box;">
+            <input type="password" id="loginPassword" class="os-input" placeholder="Password" style="width:100%; margin-bottom:15px; padding:12px; background:var(--color-bg-editor-input); border:1px solid var(--color-border); color:var(--color-text-bright); border-radius:4px; box-sizing:border-box;">
+            
+            <button onclick="AuthManager.login()" class="btn-focus" style="width: 100%; margin-bottom: 15px; padding:12px;">Login</button>
+            
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 20px;">
+                <a href="#" onclick="switchAuthDeck('forgot')" style="color: var(--color-text-dim); text-decoration: none;">Forgot Password?</a>
+                <a href="#" onclick="switchAuthDeck('register')" style="color: var(--color-primary); text-decoration: none;">Create Account</a>
+            </div>
+            
+            <button onclick="switchAuthDeck('couch')" style="background: none; border: none; color: var(--color-text-dim); cursor: pointer; font-size: 0.8rem;">← Back to Couch</button>
+        </div>
+
+        <div id="deck-register" class="os-card" style="display: none; width: 100%; max-width: 380px; text-align: center; padding: 40px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-bg-dark);">
+            <h2 style="color: var(--color-primary); margin-top: 0;">Register</h2>
+            <p style="color: var(--color-text-dim); margin-bottom: 25px; font-size: 0.9rem;">Create your secure workspace.</p>
+            
+            <input type="email" id="regEmail" class="os-input" placeholder="Email Address" style="width:100%; margin-bottom:15px; padding:12px; background:var(--color-bg-editor-input); border:1px solid var(--color-border); color:var(--color-text-bright); border-radius:4px; box-sizing:border-box;">
+            <input type="password" id="regPassword" class="os-input" placeholder="Password (Min 6 chars)" style="width:100%; margin-bottom:15px; padding:12px; background:var(--color-bg-editor-input); border:1px solid var(--color-border); color:var(--color-text-bright); border-radius:4px; box-sizing:border-box;">
+            
+            <button onclick="AuthManager.register()" class="btn-focus" style="width: 100%; margin-bottom: 20px; padding:12px;">Create Account</button>
+            <button onclick="switchAuthDeck('login')" style="background: none; border: none; color: var(--color-text-dim); cursor: pointer; font-size: 0.8rem;">← Back to Login</button>
+        </div>
+
+        <div id="deck-forgot" class="os-card" style="display: none; width: 100%; max-width: 380px; text-align: center; padding: 40px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-bg-dark);">
+            <h2 style="color: var(--color-primary); margin-top: 0;">Reset Password</h2>
+            <p style="color: var(--color-text-dim); margin-bottom: 25px; font-size: 0.9rem;">We will email you a reset link.</p>
+            
+            <input type="email" id="forgotEmail" class="os-input" placeholder="Account Email Address" style="width:100%; margin-bottom:15px; padding:12px; background:var(--color-bg-editor-input); border:1px solid var(--color-border); color:var(--color-text-bright); border-radius:4px; box-sizing:border-box;">
+            
+            <button onclick="AuthManager.resetPassword()" class="btn-focus" style="width: 100%; margin-bottom: 20px; padding:12px;">Send Reset Link</button>
+            <button onclick="switchAuthDeck('login')" style="background: none; border: none; color: var(--color-text-dim); cursor: pointer; font-size: 0.8rem;">← Back to Login</button>
+        </div>
     </div>
 
         <!-- =================================================================
@@ -740,20 +804,46 @@
         </div>
     </div>
 
-    <!-- THEME CHANGE MODAL -->
+    <!-- SETTINGS MODAL -->
     <div id="settingsModalOverlay" class="modal-backdrop" onclick="closeSettingsModal(event)" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click()">
-        <div class="modal-card" style="max-width:420px;">
-            <div class="flex-between mb-20">
-                <h2 class="text-white mb-0">Appearance</h2>
-                <button class="btn-mini btn-close-accent border-none font-1-5rem" onclick="closeSettingsModal(null)">×</button>
+    <div class="modal-card" style="max-width:420px;">
+        <div class="flex-between mb-20">
+            <h2 class="text-white mb-0">Settings</h2>
+            <button class="btn-mini btn-close-accent border-none font-1-5rem" onclick="closeSettingsModal(null)">×</button>
+        </div>
+
+        <p class="text-default mb-15">Choose a visual theme for the app. Your selection will be saved.</p>
+
+        <div class="flex-row flex-gap-10 mb-5">
+            <button id="themeDarkBtn" class="pill-btn" onclick="setTheme('dark')">Dark Mode</button>
+            <button id="themeDarkestBtn" class="pill-btn" onclick="setTheme('darkest')">Darkest Mode</button>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--color-border); margin: 25px 0 15px 0;">
+        <p style="font-size: 0.75rem; color: var(--color-text-dim); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">Account Management</p>
+        
+        <button onclick="document.getElementById('profileModalOverlay').style.display='flex'; document.getElementById('settingsModalOverlay').style.display='none';" class="pill-btn" style="width: 100%; justify-content: center; background: transparent; border: 1px solid var(--color-primary); color: var(--color-primary);">
+            Profile & Security
+        </button>
+    </div>
+</div>
+
+<div id="profileModalOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+        <div class="os-card" style="width: 350px; background: var(--color-bg-dark); border: 1px solid var(--color-border); border-radius: 12px; padding: 30px; position: relative;">
+            <button onclick="document.getElementById('profileModalOverlay').style.display='none'" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--color-text-dim); font-size: 1.2rem; cursor: pointer;">✕</button>
+            
+            <h2 style="color: var(--color-text-bright); margin-top: 0; margin-bottom: 5px;">Profile</h2>
+            <p style="color: var(--color-primary); font-size: 0.85rem; margin-bottom: 25px; font-family: monospace;" id="os-profile-email">Loading...</p>
+            
+            <div style="border-top: 1px solid var(--color-border); padding-top: 20px; margin-bottom: 20px;">
+                <p style="font-size: 0.8rem; color: var(--color-text-dim); margin-bottom: 10px;">Security</p>
+                <input type="password" id="profileNewPassword" class="os-input" placeholder="New Password" style="width:100%; padding:10px; margin-bottom:10px; background:var(--color-bg-editor-input); border:1px solid var(--color-border); color:var(--color-text-bright); border-radius:4px; box-sizing:border-box;">
+                <button onclick="AuthManager.updatePassword()" style="width: 100%; padding: 10px; background: var(--color-bg-medium); color: var(--color-text-bright); border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer;">Update Password</button>
             </div>
 
-            <p class="text-default mb-15">Choose a visual theme for the app. Your selection will be saved.</p>
-
-            <div class="flex-row flex-gap-10 mb-5">
-                <button id="themeDarkBtn" class="pill-btn" onclick="setTheme('dark')">Dark Mode</button>
-                <button id="themeDarkestBtn" class="pill-btn" onclick="setTheme('darkest')">Darkest Mode</button>
-            </div>
+            <button onclick="AuthManager.logout()" class="pill-btn" style="width: 100%; justify-content: center; background: transparent; border: 1px solid var(--color-primary); color: var(--color-primary);">
+                Sign Out & Lock OS
+            </button>
         </div>
     </div>
 
