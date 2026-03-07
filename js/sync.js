@@ -1,5 +1,5 @@
 /* =========================================
-   NEET OS: SHADOW SYNC ENGINE
+   NEET OS: SHADOW SYNC ENGINE (Nuclear Patch)
    ========================================= */
 
 window.SyncEngine = {
@@ -9,7 +9,6 @@ window.SyncEngine = {
 
     async init() {
         try {
-            // FIX: Added window. prefix
             const { data: { session }, error } = await window._supabase.auth.getSession();
             if (error) throw error;
 
@@ -28,7 +27,6 @@ window.SyncEngine = {
 
         try {
             console.log("[SyncEngine] Pulling cloud state...");
-            // FIX: Added window. prefix
             const { data, error } = await window._supabase
                 .from('user_data')
                 .select('payload')
@@ -39,6 +37,8 @@ window.SyncEngine = {
 
             if (data && data.payload) {
                 Object.keys(data.payload).forEach(key => {
+                    // NUCLEAR SECURITY FIX: Block ALL ghost auth keys from the cloud
+                    if (key.startsWith('sb-') || key.includes('supabase') || key.includes('auth')) return; 
                     localStorage.setItem(key, data.payload[key]);
                 });
                 console.log("[SyncEngine] LocalStorage updated from Cloud.");
@@ -48,7 +48,7 @@ window.SyncEngine = {
         }
     },
 
-    pushShadow(key, value) {
+    pushShadow() {
         if (!this.isReady || !this.session) return;
 
         clearTimeout(this.syncTimer);
@@ -58,10 +58,11 @@ window.SyncEngine = {
                 const snapshot = {};
                 for (let i = 0; i < localStorage.length; i++) {
                     const k = localStorage.key(i);
+                    // NUCLEAR SECURITY FIX: Never upload auth keys to the cloud
+                    if (k.startsWith('sb-') || k.includes('supabase') || k.includes('auth')) continue; 
                     snapshot[k] = localStorage.getItem(k);
                 }
 
-                // FIX: Added window. prefix
                 const { error } = await window._supabase
                     .from('user_data')
                     .upsert({ 
