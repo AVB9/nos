@@ -164,51 +164,107 @@
         </svg>
     </div>
 
-    <div id="os-auth-gate" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--color-black); z-index: 999998; display: none; align-items: center; justify-content: center; flex-direction: column;">
+    <!-- =================================================================
+         SECTION 1.5: LANDING PAGE & AUTHENTICATION
+         ================================================================= -->  
+
+<div id="os-auth-gate" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--color-bg-darkest); z-index: 999998; display: none; overflow: hidden;">
         
-        <div id="deck-couch" style="text-align: center; width: 100%; max-width: 400px;">
-            <h1 style="color: var(--color-primary); font-size: 3.5rem; margin-bottom: 10px; letter-spacing: 2px;">NEET OS</h1>
-            <p style="color: var(--color-text-dim); margin-bottom: 40px; font-size: 1.2rem;">Your dedicated offline study environment.</p>
-            <button onclick="switchAuthDeck('login')" class="btn-focus" style="width: 100%; font-size: 1.1rem; padding: 12px;">Enter / Login</button>
+        <div class="fluid-bg">
+            <div class="fluid-blob blob-1"></div>
+            <div class="fluid-blob blob-2"></div>
+            <div class="fluid-blob blob-3"></div>
         </div>
 
-        <div id="deck-login" class="os-card" style="display: none; width: 100%; max-width: 380px; text-align: center; padding: 40px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-bg-dark);">
-            <h2 style="color: var(--color-primary); margin-top: 0;">Reception</h2>
-            <p style="color: var(--color-text-dim); margin-bottom: 25px; font-size: 0.9rem;">Identify yourself to enter.</p>
-            
-            <input type="email" id="loginEmail" class="os-input" placeholder="Email Address" style="width:100%; margin-bottom:15px; padding:12px; background:var(--color-bg-editor-input); border:1px solid var(--color-border); color:var(--color-text-bright); border-radius:4px; box-sizing:border-box;">
-            <input type="password" id="loginPassword" class="os-input" placeholder="Password" style="width:100%; margin-bottom:15px; padding:12px; background:var(--color-bg-editor-input); border:1px solid var(--color-border); color:var(--color-text-bright); border-radius:4px; box-sizing:border-box;">
-            
-            <button onclick="AuthManager.login()" class="btn-focus" style="width: 100%; margin-bottom: 15px; padding:12px;">Login</button>
-            
-            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 20px;">
-                <a href="#" onclick="switchAuthDeck('forgot')" style="color: var(--color-text-dim); text-decoration: none;">Forgot Password?</a>
-                <a href="#" onclick="switchAuthDeck('register')" style="color: var(--color-primary); text-decoration: none;">Create Account</a>
+        <div class="couch-glass-logo">
+            <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="4"/>
+                <path d="M50 20 L50 80 M20 50 L80 50" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="50" cy="50" r="15" fill="currentColor"/>
+            </svg>
+        </div>
+
+        <div id="deck-couch" style="display: block; width: 100%; height: 100%; position: absolute; inset: 0; z-index: 10;">
+            <div class="couch-content">
+                <div class="couch-logo">NOS</div>
+                <div class="couch-features-wrapper">
+                    <div class="couch-features">
+                        <div class="couch-feature-item" style="--delay: 0.2s">Timer</div>
+                        <div class="couch-feature-item" style="--delay: 0.4s">Logs</div>
+                        <div class="couch-feature-item" style="--delay: 0.6s">Planner</div>
+                        <div class="couch-feature-item" style="--delay: 0.8s">Canvas</div>
+                    </div>
+                </div>
+                <div class="couch-action">
+                    <button onclick="switchAuthDeck('login')" class="couch-btn-init">Initialize</button>
+                </div>
             </div>
-            
-            <button onclick="switchAuthDeck('couch')" style="background: none; border: none; color: var(--color-text-dim); cursor: pointer; font-size: 0.8rem;">← Back to Couch</button>
         </div>
 
-        <div id="deck-register" class="os-card" style="display: none; width: 100%; max-width: 380px; text-align: center; padding: 40px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-bg-dark);">
-            <h2 style="color: var(--color-primary); margin-top: 0;">Register</h2>
-            <p style="color: var(--color-text-dim); margin-bottom: 25px; font-size: 0.9rem;">Create your secure workspace.</p>
-            
-            <input type="email" id="regEmail" class="os-input" placeholder="Email Address" style="width:100%; margin-bottom:15px; padding:12px; background:var(--color-bg-editor-input); border:1px solid var(--color-border); color:var(--color-text-bright); border-radius:4px; box-sizing:border-box;">
-            <input type="password" id="regPassword" class="os-input" placeholder="Password (Min 6 chars)" style="width:100%; margin-bottom:15px; padding:12px; background:var(--color-bg-editor-input); border:1px solid var(--color-border); color:var(--color-text-bright); border-radius:4px; box-sizing:border-box;">
-            
-            <button onclick="AuthManager.register()" class="btn-focus" style="width: 100%; margin-bottom: 20px; padding:12px;">Create Account</button>
-            <button onclick="switchAuthDeck('login')" style="background: none; border: none; color: var(--color-text-dim); cursor: pointer; font-size: 0.8rem;">← Back to Login</button>
+        <div id="deck-login" style="display: none; width: 100%; height: 100%; position: absolute; inset: 0; z-index: 10;">
+            <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+                <div class="glass-auth-card">
+                    <h2 style="color: var(--color-primary); margin-top: 0; text-transform: uppercase; letter-spacing: 2px;">Reception</h2>
+                    <p style="color: var(--color-text-dim); margin-bottom: 25px; font-size: 0.9rem;">Identify yourself to enter.</p>
+                    
+                    <input type="email" id="loginEmail" class="os-input" placeholder="Email Address" style="width:100%; margin-bottom:15px; padding:12px; border-radius:4px; box-sizing:border-box;">
+                    <input type="password" id="loginPassword" class="os-input" placeholder="Password" style="width:100%; margin-bottom:15px; padding:12px; border-radius:4px; box-sizing:border-box;">
+                    
+                    <button onclick="AuthManager.login()" class="btn-focus" style="width: 100%; margin-bottom: 15px; padding:12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">LOGIN</button>
+                    
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 20px;">
+                        <a href="#" onclick="switchAuthDeck('forgot')" style="color: var(--color-text-dim); text-decoration: none; transition: 0.2s;">Forgot Password?</a>
+                        <a href="#" onclick="switchAuthDeck('register')" style="color: var(--color-primary); text-decoration: none; transition: 0.2s;">Create Account</a>
+                    </div>
+                    
+                    <button onclick="switchAuthDeck('couch')" class="back-btn" style="background: none; border: none; color: var(--color-text-dim); cursor: pointer; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s;">← Back to Couch</button>
+                </div>
+            </div>
         </div>
 
-        <div id="deck-forgot" class="os-card" style="display: none; width: 100%; max-width: 380px; text-align: center; padding: 40px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-bg-dark);">
-            <h2 style="color: var(--color-primary); margin-top: 0;">Reset Password</h2>
-            <p style="color: var(--color-text-dim); margin-bottom: 25px; font-size: 0.9rem;">We will email you a reset link.</p>
-            
-            <input type="email" id="forgotEmail" class="os-input" placeholder="Account Email Address" style="width:100%; margin-bottom:15px; padding:12px; background:var(--color-bg-editor-input); border:1px solid var(--color-border); color:var(--color-text-bright); border-radius:4px; box-sizing:border-box;">
-            
-            <button onclick="AuthManager.resetPassword()" class="btn-focus" style="width: 100%; margin-bottom: 20px; padding:12px;">Send Reset Link</button>
-            <button onclick="switchAuthDeck('login')" style="background: none; border: none; color: var(--color-text-dim); cursor: pointer; font-size: 0.8rem;">← Back to Login</button>
+        <div id="deck-register" style="display: none; width: 100%; height: 100%; position: absolute; inset: 0; z-index: 10;">
+            <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+                <div class="glass-auth-card">
+                    <h2 style="color: var(--color-primary); margin-top: 0; text-transform: uppercase; letter-spacing: 2px;">Register</h2>
+                    <p style="color: var(--color-text-dim); margin-bottom: 25px; font-size: 0.9rem;">Create your secure workspace.</p>
+                    
+                    <input type="text" id="regName" class="os-input" placeholder="Display Name" style="width:100%; margin-bottom:15px; padding:12px; border-radius:4px; box-sizing:border-box;">
+                    <input type="email" id="regEmail" class="os-input" placeholder="Email Address" style="width:100%; margin-bottom:15px; padding:12px; border-radius:4px; box-sizing:border-box;">
+                    <input type="password" id="regPassword" class="os-input" placeholder="Password (Min 6 chars)" style="width:100%; margin-bottom:15px; padding:12px; border-radius:4px; box-sizing:border-box;">
+                    
+                    <button onclick="AuthManager.register()" class="btn-focus" style="width: 100%; margin-bottom: 20px; padding:12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">CREATE ACCOUNT</button>
+                    <button onclick="switchAuthDeck('login')" class="back-btn" style="background: none; border: none; color: var(--color-text-dim); cursor: pointer; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s;">← Back to Login</button>
+                </div>
+            </div>
         </div>
+
+        <div id="deck-forgot" style="display: none; width: 100%; height: 100%; position: absolute; inset: 0; z-index: 10;">
+            <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+                <div class="glass-auth-card">
+                    <h2 style="color: var(--color-primary); margin-top: 0; text-transform: uppercase; letter-spacing: 2px;">Reset</h2>
+                    <p style="color: var(--color-text-dim); margin-bottom: 25px; font-size: 0.9rem;">We will email you a reset link.</p>
+                    
+                    <input type="email" id="forgotEmail" class="os-input" placeholder="Account Email Address" style="width:100%; margin-bottom:15px; padding:12px; border-radius:4px; box-sizing:border-box;">
+                    
+                    <button onclick="AuthManager.resetPassword()" class="btn-focus" style="width: 100%; margin-bottom: 20px; padding:12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">SEND LINK</button>
+                    <button onclick="switchAuthDeck('login')" class="back-btn" style="background: none; border: none; color: var(--color-text-dim); cursor: pointer; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s;">← Back to Login</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="deck-recovery" style="display: none; width: 100%; height: 100%; position: absolute; inset: 0; z-index: 10;">
+            <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+                <div class="glass-auth-card">
+                    <h2 style="color: var(--color-primary); margin-top: 0; text-transform: uppercase; letter-spacing: 2px;">Secure</h2>
+                    <p style="color: var(--color-text-dim); margin-bottom: 25px; font-size: 0.9rem;">Enter your new password.</p>
+                    
+                    <input type="password" id="recoveryNewPassword" class="os-input" placeholder="New Password (Min 6 chars)" style="width:100%; margin-bottom:15px; padding:12px; border-radius:4px; box-sizing:border-box;">
+                    
+                    <button onclick="AuthManager.completePasswordReset()" class="btn-focus" style="width: 100%; margin-bottom: 20px; padding:12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">SAVE & ENTER OS</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
         <!-- =================================================================
@@ -832,8 +888,8 @@
         <div class="os-card" style="width: 350px; background: var(--color-bg-dark); border: 1px solid var(--color-border); border-radius: 12px; padding: 30px; position: relative;">
             <button onclick="document.getElementById('profileModalOverlay').style.display='none'" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--color-text-dim); font-size: 1.2rem; cursor: pointer;">✕</button>
             
-            <h2 style="color: var(--color-text-bright); margin-top: 0; margin-bottom: 5px;">Profile</h2>
-            <p style="color: var(--color-primary); font-size: 0.85rem; margin-bottom: 25px; font-family: monospace;" id="os-profile-email">Loading...</p>
+            <h2 id="os-profile-name" style="color: var(--color-text-bright); margin-top: 0; margin-bottom: 5px;">Loading...</h2>
+            <p id="os-profile-email" style="color: var(--color-text-dim); font-size: 0.85rem; margin-bottom: 25px; font-family: monospace;">loading...</p>
             
             <div style="border-top: 1px solid var(--color-border); padding-top: 20px; margin-bottom: 20px;">
                 <p style="font-size: 0.8rem; color: var(--color-text-dim); margin-bottom: 10px;">Security</p>

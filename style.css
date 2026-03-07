@@ -2441,13 +2441,14 @@ h1.ce-header { font-size: 2.2rem; color: var(--color-text-bright); border-bottom
 h2.ce-header { font-size: 1.6rem; color: var(--color-text-editor-h2); margin-bottom: 12px; }
 h3.ce-header { font-size: 1.2rem; color: var(--color-primary); text-transform: uppercase; letter-spacing: 1px; }
 .ce-code__textarea { background-color: var(--color-bg-editor-code) !important; color: var(--color-biology) !important; border: 1px solid var(--color-border-editor) !important; font-family: monospace !important; border-radius: 6px; padding: 15px; }
-<<<<<<<<< Temporary merge branch 1
-div.editor-container code.inline-code, .inline-code, .cdx-inline-code { padding: 2px 6px !important; color: var(--color-text-bright) !important; background-color: var(--color-bg-medium) !important; border: 1px solid var(--color-border) !important; border-radius: 4px !important; font-family: monospace !important; font-size: 0.9em !important; font-weight: normal !important; letter-spacing: normal !important; }
-div.editor-container mark.cdx-marker, div.editor-container mark, .cdx-marker { background-color: var(--color-highlight-bg, rgba(255, 215, 0, 0.15)) !important; color: var(--color-highlight, #ffd700) !important; padding: 2px 4px !important; border-radius: 4px !important; font-weight: inherit !important; }
-=========
-div.editor-container code.inline-code, .inline-code, .cdx-inline-code { padding: 2px 6px !important; color: var(--color-biology) !important; background-color: var(--color-bg-editor-code) !important; border: 1px solid var(--color-border) !important; border-radius: 4px !important; font-family: monospace !important; font-size: 1em !important; font-weight: normal !important; letter-spacing: normal !important; }
+div.editor-container code.inline-code, .inline-code, .cdx-inline-code { padding: 2px 6px !important; background-color: var(--color-bg-editor-code) !important; color: var(--color-biology) !important; border: 1px solid var(--color-border-editor) !important; border-radius: 4px !important; font-family: monospace !important; font-size: 1em !important; font-weight: normal !important; letter-spacing: normal !important; }
 div.editor-container mark.cdx-marker, div.editor-container mark, .cdx-marker { background-color: var(--color-highlight-bg) !important; color: var(--color-highlight) !important; padding: 2px 4px !important; border-radius: 4px !important; font-weight: inherit !important; }
->>>>>>>>> Temporary merge branch 2
+.cdx-list--unordered, .cdx-list-unordered { list-style: none !important; padding-left: 20px !important; }
+.cdx-list--unordered .cdx-list__item, .cdx-list-unordered .cdx-list__item { position: relative !important; }
+.cdx-list--unordered .cdx-list__item::marker, .cdx-list-unordered .cdx-list__item::marker { content: "" !important; display: none !important; }
+.cdx-list--unordered .cdx-list__item::after, .cdx-list-unordered .cdx-list__item::after { display: none !important; }
+
+/* Unordered Lists */
 .cdx-list--unordered, .cdx-list-unordered { list-style: none !important; padding-left: 20px !important; }
 .cdx-list--unordered .cdx-list__item, .cdx-list-unordered .cdx-list__item { position: relative !important; }
 .cdx-list--unordered .cdx-list__item::marker, .cdx-list-unordered .cdx-list__item::marker { content: "" !important; display: none !important; }
@@ -2512,3 +2513,307 @@ div.editor-container mark.cdx-marker, div.editor-container mark, .cdx-marker { b
 .ce-block__content, .ce-paragraph, .ce-header, .cdx-list, .infinite-canvas [contenteditable="true"] { cursor: text !important; }
 .cdx-checklist__item-checkbox, .cdx-checklist__item-checkbox:hover { cursor: pointer !important; }
 body.is-resizing, body.is-resizing * { cursor: nwse-resize !important; user-select: none !important; }
+
+
+/* =================================================================
+    SECTION 23: COUCH / LANDING PAGE (Fluid OS Boot)
+   ================================================================= */
+        .couch-container {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: var(--color-bg-darkest);
+            overflow: hidden;
+            display: none; /* Controlled by AuthManager */
+        }
+
+        /* --- 1. Performant Fluid Background --- */
+        .fluid-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .fluid-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            animation: floatBlob 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform; /* Eliminates rendering lag */
+        }
+
+        /* Using your exact theme colors for the fluid effect */
+        .blob-1 {
+            width: 70vw; height: 70vw;
+            background: radial-gradient(circle, rgba(255, 59, 59, 0.08) 0%, transparent 60%);
+            top: -20%; left: -20%;
+        }
+        
+        .blob-2 {
+            width: 80vw; height: 80vw;
+            background: radial-gradient(circle, rgba(42, 10, 10, 0.9) 0%, transparent 60%); /* var(--color-primary-dark) */
+            bottom: -30%; right: -10%;
+            animation-delay: -5s;
+            animation-direction: alternate-reverse;
+        }
+
+        .blob-3 {
+            width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(255, 107, 107, 0.05) 0%, transparent 60%);
+            top: 20%; left: 30%;
+            animation-delay: -10s;
+        }
+
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(8vw, -8vh) scale(1.1); }
+        }
+
+        /* --- 2. Foreground Layout --- */
+        .couch-content {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            padding: 50px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+        }
+
+        /* Top Left */
+        .couch-logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--color-primary);
+            letter-spacing: 6px;
+            text-shadow: 0 0 15px rgba(255, 59, 59, 0.3);
+            text-transform: uppercase;
+        }
+
+        /* Middle Right */
+        .couch-features-wrapper {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .couch-features {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .couch-feature-item {
+            font-size: 5rem;
+            font-weight: 300;
+            color: var(--color-text-bright);
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            line-height: 1.1;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            
+            /* Entrance Animation Variables */
+            opacity: 0;
+            transform: translateX(40px);
+            animation: slideInRight 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            animation-delay: var(--delay); 
+        }
+
+        @keyframes slideInRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Bottom Right */
+        .couch-action {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .couch-btn-init {
+            background: transparent;
+            color: var(--color-text-accent);
+            border: 1px solid var(--color-border-light);
+            padding: 15px 50px;
+            font-family: 'Nova Flat', sans-serif;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            
+            /* Smooth, lag-free transition setup */
+            transition: color 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            will-change: transform;
+        }
+
+        .couch-btn-init:hover {
+            color: var(--color-text-bright);
+            border-color: var(--color-primary);
+            background: rgba(255, 59, 59, 0.05);
+            /* Slide slightly left to point toward the text instead of a laggy scale effect */
+            transform: translateX(-10px); 
+            box-shadow: -5px 0 20px rgba(255, 59, 59, 0.2);
+        }
+
+        /* --- 3. Giant Tinted Glass Logo --- */
+        .couch-glass-logo {
+            position: absolute;
+            top: 50%;
+            left: 25%; /* Places it perfectly in the left/center empty space */
+            transform: translate(-50%, -50%);
+            width: 45vh; /* Scales safely based on screen height */
+            height: 45vh;
+            border-radius: 50%;
+            
+            /* The Frosted Tinted Glass Texture */
+            background: linear-gradient(135deg, rgba(255, 59, 59, 0.08) 0%, rgba(20, 5, 5, 0.3) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); /* For Safari support */
+            border: 1px solid rgba(255, 59, 59, 0.15);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 0 40px rgba(255, 59, 59, 0.05);
+            
+            /* Center the SVG inside the glass */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 0; /* Keeps it behind the main layout text */
+            
+            /* Entrance Animation */
+            opacity: 0;
+            animation: glassEntrance 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            animation-delay: 0.3s; /* Starts slightly after the background loads */
+        }
+
+        .couch-glass-logo svg {
+            width: 60%; 
+            height: 60%;
+            color: rgba(255, 59, 59, 0.4); /* Muted, translucent red */
+            filter: drop-shadow(0 0 15px rgba(255, 59, 59, 0.3)); /* Soft glow inside the glass */
+        }
+
+        @keyframes glassEntrance {
+            0% { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0.85) rotate(-15deg); 
+            }
+            100% { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1) rotate(0deg); 
+            }
+        }
+
+        /* --- Glass Logo Exit Animation --- */
+        .couch-glass-logo.glass-exit {
+            animation: glassExit 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+        }
+
+        @keyframes glassExit {
+            0% { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1) rotate(0deg); 
+            }
+            100% { 
+                opacity: 0; 
+                /* Drifts up and scales slightly to feel like it's dissolving into the background */
+                transform: translate(-50%, -55%) scale(1.1) rotate(5deg); 
+                visibility: hidden;
+            }
+        }
+
+        /* --- 4. Glassmorphism Auth Cards --- */
+        .glass-auth-card {
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            padding: 40px;
+            border-radius: 16px;
+            
+            /* The sleek frosted glass effect */
+            background: rgba(10, 5, 5, 0.4);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 59, 59, 0.1);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.02);
+            
+            /* Pop-in animation */
+            animation: cardEntrance 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Input fields inside the glass card */
+        .glass-auth-card .os-input {
+            background: rgba(0, 0, 0, 0.4) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            color: var(--color-text-bright) !important;
+            font-family: 'Nova Flat', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .glass-auth-card .os-input:focus {
+            background: rgba(0, 0, 0, 0.6) !important;
+            border-color: var(--color-primary) !important;
+            box-shadow: 0 0 15px rgba(255, 59, 59, 0.2) !important;
+            outline: none;
+        }
+        
+        /* Smooth hover states for text links */
+        .glass-auth-card a:hover, 
+        .glass-auth-card .back-btn:hover {
+            color: var(--color-text-bright) !important;
+            text-shadow: 0 0 8px rgba(255,255,255,0.4);
+        }
+
+
+    /* =================================================================
+        SECTION 24: GLOBAL OS ALERTS (TOASTS)
+       ================================================================= */    
+        .os-toast {
+            background: rgba(10, 5, 5, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 59, 59, 0.3);
+            color: var(--color-primary);
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-family: 'Nova Flat', sans-serif;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-shadow: 0 0 12px rgba(255, 59, 59, 0.9);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(255, 59, 59, 0.1);
+            text-align: center;
+            
+            /* Entrance Animation */
+            opacity: 0;
+            transform: translateY(30px);
+            animation: toastPop 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* Exit Animation Class */
+        .os-toast.toast-exit {
+            animation: toastFade 0.4s ease forwards;
+        }
+
+        @keyframes toastPop {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes toastFade {
+            to { opacity: 0; transform: translateY(-15px); }
+        }
