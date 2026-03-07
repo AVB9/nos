@@ -42,15 +42,7 @@ window.AuthManager = {
             }
 
             const { data: { session }, error } = await window._supabase.auth.getSession();
-
-            if (error) {
-                // SMART WIPE: Rescue the theme before wiping
-                const savedTheme = localStorage.getItem('neetTheme');
-                localStorage.clear();
-                if (savedTheme) localStorage.setItem('neetTheme', savedTheme);
-                
-                throw error;
-            }
+            if (error) throw error;
 
             if (session) {
                 if (isRecovery) {
@@ -99,37 +91,12 @@ window.AuthManager = {
     async login() {
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
-        
-        if (!email || !password) return alert("Credentials required.");
+        if (!email || !password) return alert("Email and Password required.");
 
         try {
-            // SMART WIPE: Rescue the theme before wiping
-            const savedTheme = localStorage.getItem('neetTheme');
-            localStorage.clear();
-            if (savedTheme) localStorage.setItem('neetTheme', savedTheme);
-
-            const preloader = document.getElementById('neet-preloader');
-            if (preloader) {
-                preloader.style.transition = 'opacity 0.2s ease'; 
-                preloader.style.opacity = '1';
-                preloader.style.backgroundColor = '#000000'; 
-                preloader.classList.remove('hidden', 'zoom-active');
-            }
-
             const { error } = await window._supabase.auth.signInWithPassword({ email, password });
             if (error) throw error;
-            
-            document.getElementById('loginPassword').value = '';
-            
-            if (typeof SyncEngine !== 'undefined') {
-                await Promise.race([
-                    SyncEngine.init(),
-                    new Promise(resolve => setTimeout(resolve, 2000))
-                ]);
-            }
-            
-            window.location.href = window.location.pathname + '?boot=' + Date.now();
-            
+            window.location.reload(); 
         } catch (err) {
             const preloader = document.getElementById('neet-preloader');
             if (preloader) preloader.classList.add('hidden');
@@ -190,38 +157,6 @@ window.AuthManager = {
         }
     },
 
-    async completePasswordReset() {
-        const newPassword = document.getElementById('recoveryNewPassword').value;
-        if (!newPassword || newPassword.length < 6) return alert("Password must be at least 6 characters.");
-
-        try {
-            const preloader = document.getElementById('neet-preloader');
-            if (preloader) {
-                preloader.style.transition = 'opacity 0.2s ease';
-                preloader.style.opacity = '1';
-                preloader.style.backgroundColor = '#000000';
-                preloader.classList.remove('hidden', 'zoom-active');
-            }
-
-            const { error } = await window._supabase.auth.updateUser({ password: newPassword });
-            if (error) throw error;
-            
-            if (typeof SyncEngine !== 'undefined') {
-                await Promise.race([
-                    SyncEngine.init(),
-                    new Promise(resolve => setTimeout(resolve, 2000))
-                ]);
-            }
-            
-            window.location.href = window.location.pathname + '?boot=' + Date.now();
-        } catch (err) {
-            const preloader = document.getElementById('neet-preloader');
-            if (preloader) preloader.classList.add('hidden');
-            
-            alert("Reset failed: " + err.message);
-        }
-    },
-
     async logout() {
         try {
             document.getElementById('profileModalOverlay').style.display = 'none';
@@ -248,24 +183,4 @@ window.AuthManager = {
 
 document.addEventListener('DOMContentLoaded', () => {
     AuthManager.init();
-
-    const loginPwdInput = document.getElementById('loginPassword');
-    if (loginPwdInput) {
-        loginPwdInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                AuthManager.login();
-            }
-        });
-    }
-    
-    const regPwdInput = document.getElementById('regPassword');
-    if (regPwdInput) {
-        regPwdInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                AuthManager.register();
-            }
-        });
-    }
 });
